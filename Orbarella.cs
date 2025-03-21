@@ -49,7 +49,7 @@ public class Orbarella : Calimoe
             GraphicsDevice.Clear(ClearColour);
         }
 
-        _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend);
+        _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
         _sm.Draw(_spriteBatch);
         _spriteBatch.End();
 
