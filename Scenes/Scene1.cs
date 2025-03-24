@@ -38,12 +38,26 @@ public class Scene1 : GameScene
         _player = new Player(   _am.LoadTexture("wizard"),
                                 _am.LoadTexture("CannonBase"), 
                                 _am.LoadTexture("CannonBarrel"), 
-                                streetLevel);
+                                streetLevel,
+                                WindowWidth);
+        _player._boundsTest = _am.LoadTexture("bounds-test");
 
     }
 
     public override void HandleInput(GameTime gt)
     {
+        if (_ih.KeyDown(Keys.A))
+        {
+            _player.MoveLeft();
+        }
+        else if (_ih.KeyDown(Keys.D))
+        {
+            _player.MoveRight();
+        }
+        else if (_ih.KeyPressed(Keys.P))
+        {
+            //_state = GameState.Paused;
+        }
 
     }
 
