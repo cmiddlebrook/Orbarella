@@ -13,7 +13,7 @@ public class Orbarella : Calimoe
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         _showFPS = false;
-        _fallbackTextureSize = 64;
+        _fallbackTextureSize = 32;
     }
 
     protected override void Initialize()

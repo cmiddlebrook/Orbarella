@@ -80,6 +80,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/cannon-split-sheet.png
 
+#begin Textures/CannonBarrel.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/CannonBarrel.png
+
 #begin Textures/CannonBase.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -151,18 +163,6 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/house4.png
-
-#begin Textures/house4a.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyColor=255,0,255,255
-/processorParam:ColorKeyEnabled=True
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Textures/house4a.png
 
 #begin Textures/house5.png
 /importer:TextureImporter
@@ -236,7 +236,7 @@
 /processorParam:TextureFormat=Color
 /build:Textures/Scene1.png
 
-#begin Textures/StreetBase.png
+#begin Textures/street-base.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -246,9 +246,9 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/StreetBase.png
+/build:Textures/street-base.png
 
-#begin Textures/wizard-sheet.png
+#begin Textures/wizard.png
 /importer:TextureImporter
 /processor:TextureProcessor
 /processorParam:ColorKeyColor=255,0,255,255
@@ -258,5 +258,5 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Textures/wizard-sheet.png
+/build:Textures/wizard.png
 
