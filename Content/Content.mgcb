@@ -236,6 +236,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/house9.png
 
+#begin Textures/orb-green.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/orb-green.png
+
 #begin Textures/Scene1.png
 /importer:TextureImporter
 /processor:TextureProcessor

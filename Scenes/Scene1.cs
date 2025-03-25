@@ -15,6 +15,7 @@ public class Scene1 : GameScene
     private Vector2 _housePosition;
     private float _houseScale = 4.0f;
     private Player _player;
+    private Orb _orb;
 
     public int WindowWidth => _background.Width;
     public int WindowHeight => _background.Height;
@@ -41,7 +42,7 @@ public class Scene1 : GameScene
                                 streetLevel,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
-
+        _orb = new Orb(_am.LoadTexture("orb-green"), _player);
     }
 
     public override void HandleInput(GameTime gt)
@@ -54,7 +55,17 @@ public class Scene1 : GameScene
         {
             _player.MoveRight();
         }
-        else if (_ih.KeyPressed(Keys.P))
+
+        if (_ih.KeyDown(Keys.E))
+        {
+            _player.RotateBarrelRight();
+        }
+        else if (_ih.KeyDown(Keys.Q))
+        {
+            _player.RotateBarrelLeft();
+        }
+
+        if (_ih.KeyPressed(Keys.P))
         {
             //_state = GameState.Paused;
         }
@@ -65,6 +76,7 @@ public class Scene1 : GameScene
     {
         base.Update(gt);
         _player.Update(gt);
+        _orb.Update(gt);
         HandleInput(gt);
     }
 
@@ -73,6 +85,7 @@ public class Scene1 : GameScene
         sb.Draw(_background, Vector2.Zero, Color.White);
         DrawStreetBase(sb);
         sb.Draw(_house, _housePosition, null, Color.White, 0f, Vector2.Zero, _houseScale, SpriteEffects.None, 0f);
+        _orb.Draw(sb);
         _player.Draw(sb);
     }
 
