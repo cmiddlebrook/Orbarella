@@ -44,7 +44,8 @@ public class Scene1 : GameScene
                                 streetLevel,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
-        _orb = new Orb(_am.LoadTexture("orb-green"), new Vector2(cannonBarrel.Width - 20, -7));
+        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
+        _orb = new Orb(_am.LoadTexture("orb-green"), new Vector2(cannonBarrel.Width - 20, -7), playArea);
     }
 
     public override void HandleInput(GameTime gt)
@@ -65,6 +66,11 @@ public class Scene1 : GameScene
         else if (_ih.KeyDown(Keys.Q))
         {
             _player.RotateBarrelLeft();
+        }
+
+        if (_ih.KeyPressed(Keys.Space))
+        {
+            _orb.Launch();
         }
 
         if (_ih.KeyPressed(Keys.P))
