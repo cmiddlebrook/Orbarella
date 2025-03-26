@@ -26,8 +26,6 @@ public class Player
     private Vector2 _wizardPosition;
     private Vector2 _basePositionOffset;
     private Vector2 _barrelPositionOffset;
-    private Vector2 _orbPositionOffset;
-    private Vector2 _orbPosition;
     private Rectangle _bounds;
     private int _rightEdge;
     private MoveState _moveState = MoveState.Stopped;
@@ -42,7 +40,7 @@ public class Player
     private Rectangle Bounds => _bounds;
     public Texture2D _boundsTest {  get; set; }
 
-    public Vector2 OrbPosition => _orbPosition;
+    public CannonData CannonData => new CannonData(_barrel.Position, Angle);
 
     public Player(Texture2D wizard, Texture2D cannonBase, Texture2D cannonBarrel, int streetLevel, int rightEdge)
     {
@@ -56,7 +54,6 @@ public class Player
         _barrelPositionOffset = new Vector2(100, wizard.Height - cannonBarrel.Height + barrelOrigin.Y);
         _barrel = new SpriteObject(cannonBarrel, _wizardPosition + _barrelPositionOffset, Vector2.Zero, 1.0f);
         _barrel.Origin = barrelOrigin;
-        _orbPositionOffset = new Vector2(cannonBarrel.Width - 20, -7);
         _basePositionOffset = new Vector2(68, wizard.Height - cannonBase.Height);
         _base = new SpriteObject(cannonBase, _wizardPosition + _basePositionOffset, Vector2.Zero, 1.0f);
         _bounds = new Rectangle(_wizard.Bounds.X, _wizard.Bounds.Y, wizard.Width + cannonBarrel.Width, wizard.Height);
@@ -125,11 +122,11 @@ public class Player
         Angle = MathHelper.Clamp(Angle, MIN_ANGLE, MAX_ANGLE);
         _barrel.Rotation = MathHelper.ToRadians(Angle - 90); // -90 to account for the 90 degree starting angle
 
-        // move the ball with the barrel as it rotates
-        float rad = MathHelper.ToRadians(Angle - 90f); // Subtract 90 to account for the initial right-facing angle
-        float xOffset = _orbPositionOffset.X * (float)Math.Cos(rad) - _orbPositionOffset.Y * (float)Math.Sin(rad);
-        float yOffset = _orbPositionOffset.X * (float)Math.Sin(rad) + _orbPositionOffset.Y * (float)Math.Cos(rad);
-        _orbPosition = _barrel.Position + new Vector2(xOffset, yOffset);
+        //// move the orb with the barrel as it rotates
+        //float rad = MathHelper.ToRadians(Angle - 90f); // Subtract 90 to account for the initial right-facing angle
+        //float xOffset = _orbPositionOffset.X * (float)Math.Cos(rad) - _orbPositionOffset.Y * (float)Math.Sin(rad);
+        //float yOffset = _orbPositionOffset.X * (float)Math.Sin(rad) + _orbPositionOffset.Y * (float)Math.Cos(rad);
+        //_orbPosition = _barrel.Position + new Vector2(xOffset, yOffset);
 
         // update the sprites
         _wizard.Update(gt);

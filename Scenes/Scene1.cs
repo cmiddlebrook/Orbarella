@@ -36,13 +36,15 @@ public class Scene1 : GameScene
         _house = _am.LoadTexture("house4");
         _housePosition = new Vector2(WindowWidth - (_house.Width * _houseScale), 
             WindowHeight - _streetBase.Height - (_house.Height * _houseScale));
+
+        Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
         _player = new Player(   _am.LoadTexture("wizard"),
-                                _am.LoadTexture("CannonBase"), 
-                                _am.LoadTexture("CannonBarrel"), 
+                                _am.LoadTexture("CannonBase"),
+                                cannonBarrel, 
                                 streetLevel,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
-        _orb = new Orb(_am.LoadTexture("orb-green"), _player);
+        _orb = new Orb(_am.LoadTexture("orb-green"), new Vector2(cannonBarrel.Width - 20, -7));
     }
 
     public override void HandleInput(GameTime gt)
@@ -76,7 +78,7 @@ public class Scene1 : GameScene
     {
         base.Update(gt);
         _player.Update(gt);
-        _orb.Update(gt);
+        _orb.Update(gt, _player.CannonData);
         HandleInput(gt);
     }
 
