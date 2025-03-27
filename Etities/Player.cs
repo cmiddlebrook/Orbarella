@@ -43,12 +43,6 @@ public class Player
     public Texture2D _boundsTest {  get; set; }
 
     public CannonData CannonData => new CannonData(_barrel.Position, Angle);
-    //{
-    //    get
-    //    {
-    //        return new CannonData(_barrel.Position, Angle);
-    //    }        
-    //}
 
     public Player(Texture2D wizard, Texture2D cannonBase, Texture2D cannonBarrel, int streetLevel, int rightEdge)
     {

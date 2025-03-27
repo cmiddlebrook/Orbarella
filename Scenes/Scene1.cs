@@ -5,17 +5,19 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
+using System.IO;
+using System.Collections.Generic;
+using System.Text.Json;
 
 namespace Orbarella;
 public class Scene1 : GameScene
 {
     private Texture2D _background;
     private Texture2D _streetBase;
-    private Texture2D _house;
-    private Vector2 _housePosition;
-    private float _houseScale = 4.0f;
+    private List<Building> _buildings = new List<Building>();
     private Player _player;
     private Orb _orb;
+    private SpriteObject _nightmare;
 
     public int WindowWidth => _background.Width;
     public int WindowHeight => _background.Height;
@@ -32,10 +34,9 @@ public class Scene1 : GameScene
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
         int streetLevel = WindowHeight - _streetBase.Height;
+        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
 
-        _house = _am.LoadTexture("house4");
-        _housePosition = new Vector2(WindowWidth - (_house.Width * _houseScale), 
-            WindowHeight - _streetBase.Height - (_house.Height * _houseScale));
+        CreateBuildings(playArea, streetLevel);
 
         Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
         _player = new Player(   _am.LoadTexture("wizard"),
@@ -44,12 +45,27 @@ public class Scene1 : GameScene
                                 streetLevel,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
-        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
         _orb = new Orb( _am.LoadTexture("orb-green2"), 
                         _am.LoadTexture("progress-bar-empty"),
                         _am.LoadTexture("progress-bar-tick"),
                         new Vector2(cannonBarrel.Width - 20, -7), 
                         playArea);
+
+        _nightmare = new SpriteObject(_am.LoadTexture("anger"), new Vector2(500, 200), Vector2.Zero, 1.0f);
+    }
+
+    private void CreateBuildings(Rectangle playArea, int streetLevel)
+    {
+        string json = File.ReadAllText("Data/buildings.json");
+        List<BuildingData> buildings = JsonSerializer.Deserialize<List<BuildingData>>(json);
+
+        int rightEdge = playArea.Width;
+        foreach (BuildingData bd in buildings)
+        {
+            Building building = new Building(_am.LoadTexture(bd.Name), rightEdge, streetLevel, bd.Windows);
+            _buildings.Add(building);
+            rightEdge = building.Bounds.Left;
+        }
     }
 
     public override void HandleInput(GameTime gt)
@@ -91,6 +107,10 @@ public class Scene1 : GameScene
     public override void Update(GameTime gt)
     {
         base.Update(gt);
+        foreach (Building building in _buildings)
+        {
+            building.Update(gt);
+        }
         _player.Update(gt);
         _orb.Update(gt, _player.CannonData);
         HandleInput(gt);
@@ -100,9 +120,13 @@ public class Scene1 : GameScene
     {
         sb.Draw(_background, Vector2.Zero, Color.White);
         DrawStreetBase(sb);
-        sb.Draw(_house, _housePosition, null, Color.White, 0f, Vector2.Zero, _houseScale, SpriteEffects.None, 0f);
+        foreach (Building building in _buildings)
+        {
+            building.Draw(sb);
+        }
         _orb.Draw(sb);
         _player.Draw(sb);
+        //_nightmare.Draw(sb);
     }
 
     private void DrawStreetBase(SpriteBatch sb)
