@@ -45,7 +45,7 @@ public class Scene1 : GameScene
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
-        _orb = new Orb( _am.LoadTexture("orb-green"), 
+        _orb = new Orb( _am.LoadTexture("orb-green2"), 
                         _am.LoadTexture("progress-bar-empty"),
                         _am.LoadTexture("progress-bar-tick"),
                         new Vector2(cannonBarrel.Width - 20, -7), 

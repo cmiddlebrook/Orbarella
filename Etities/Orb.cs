@@ -30,6 +30,7 @@ public class Orb
     private double _chargeTimer = 0f;
     private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
+    private bool _pulseGrow = true;
 
     public Orb(Texture2D orb, Texture2D progressBarContainer, Texture2D progressBarTick, Vector2 positionOffset, Rectangle playArea)
     {
@@ -59,10 +60,23 @@ public class Orb
     public void Update(GameTime gt, CannonData cannonData)
     {
         _cannonData = cannonData;
+        float delta = (float)gt.ElapsedGameTime.TotalSeconds;
+
         switch (_orbState)
         {
             case OrbState.ReadyPosition:
                 {
+                    if (_pulseGrow)
+                    {
+                        _orb.Scale += delta;
+                        if (_orb.Scale >= 1.3f) _pulseGrow = false;
+                    }
+                    else
+                    {
+                        _orb.Scale -= delta;
+                        if (_orb.Scale <= 1.1f) _pulseGrow = true;
+                    }
+
                     // move the orb with the barrel as it rotates
                     float rad = MathHelper.ToRadians(cannonData.CannonAngle - 90f); // Subtract 90 to account for the initial right-facing angle
                     float xOffset = _positionOffset.X * (float)Math.Cos(rad) - _positionOffset.Y * (float)Math.Sin(rad);
@@ -88,10 +102,10 @@ public class Orb
                     }
                     else
                     {
-                        double delta = gt.ElapsedGameTime.TotalSeconds;
-                        double speed = (BASE_SPEED + _numChargeTicks);
-                        _orb.Position += _trajectory * (float)(speed * delta);
-                        _trajectory.Y += (float)(GRAVITY * delta);
+                        _orb.Rotation += delta * BASE_SPEED;
+                        float speed = (BASE_SPEED + _numChargeTicks);
+                        _orb.Position += _trajectory * speed * delta;
+                        _trajectory.Y += GRAVITY * delta;
                     }
                     break;
                 }
