@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics;
 
 namespace Orbarella;
 public class Orb
@@ -9,22 +10,49 @@ public class Orb
     private enum OrbState
     {
         ReadyPosition,
+        Charging,
         InFlight,
     }
 
+    private const int MAX_CHARGE_TICKS = 11;
+    private const double TICK_TIME = 1.2f / MAX_CHARGE_TICKS;
+    private const float GRAVITY = 3f;
+
     private SpriteObject _orb;
+    private SpriteObject _progressBarContainer;
+    private Texture2D _progressBarTick;
+    private Vector2[] _progressBarTickPositions;
     private Rectangle _playArea;
     private Vector2 _positionOffset;
     private Vector2 _trajectory;
-    private float _speed = 10f;
+    private float _baseSpeed = 2f;
+    private double _chargeTimer = 0f;
+    private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
 
-    public Orb(Texture2D orb, Vector2 positionOffset, Rectangle playArea)
+    public Orb(Texture2D orb, Texture2D progressBarContainer, Texture2D progressBarTick, Vector2 positionOffset, Rectangle playArea)
     {
         _positionOffset = positionOffset;
+        _progressBarContainer = new SpriteObject(progressBarContainer);
+        _progressBarTick = progressBarTick;
         _playArea = playArea;
         _orb = new SpriteObject(orb);
         _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
+        SetupProgressBar();
+    }
+
+    private void SetupProgressBar()
+    {
+        // positions are relative to the container
+        _progressBarTickPositions = new Vector2[11];
+        int x = 4;
+        int y = 2;
+        for (int i = 0; i < 11; i++)
+        {
+            _progressBarTickPositions[i] = new Vector2(x, y);
+            x += 8;
+        }
+
     }
 
     public void Update(GameTime gt, CannonData cannonData)
@@ -39,6 +67,12 @@ public class Orb
                     float yOffset = _positionOffset.X * (float)Math.Sin(rad) + _positionOffset.Y * (float)Math.Cos(rad);
                     _trajectory = new Vector2(xOffset, yOffset);
                     _orb.Position = cannonData.CannonOrigin + _trajectory;
+                    _progressBarContainer.Position = _orb.Position + new Vector2(-40, -50);
+                    break;
+                }
+            case OrbState.Charging:
+                {
+                    _chargeTimer += gt.ElapsedGameTime.TotalSeconds;
                     break;
                 }
             case OrbState.InFlight:
@@ -48,12 +82,14 @@ public class Orb
                         _orb.Bounds.Bottom < 0 ||
                         _orb.Bounds.Top > _playArea.Height)
                     {
-                        _orbState = OrbState.ReadyPosition;
+                        Reload();
                     }
                     else
                     {
-                        _trajectory.Y += 1f;
-                        _orb.Position += _trajectory * _speed * (float)gt.ElapsedGameTime.TotalSeconds;
+                        _trajectory.Y += GRAVITY;
+                        double speed = (_baseSpeed + _numChargeTicks);
+                        _orb.Position += _trajectory * (float)(speed * gt.ElapsedGameTime.TotalSeconds);
+                        Debug.WriteLine($"Orb Position: {_orb.Position}");
                     }
                     break;
                 }
@@ -63,11 +99,40 @@ public class Orb
     public void Draw(SpriteBatch sb)
     {
         _orb.Draw(sb);
+
+        if (_orbState == OrbState.Charging)
+        {
+            _progressBarContainer.Draw(sb);
+            _numChargeTicks = Math.Min((int)(_chargeTimer / TICK_TIME), MAX_CHARGE_TICKS);
+            for (int i = 0; i < _numChargeTicks; i++)
+            {
+                sb.Draw(_progressBarTick, _progressBarContainer.Position + _progressBarTickPositions[i], Color.White);
+            }
+        }
+    }
+
+    public void Reload()
+    {
+        _chargeTimer = 0f;
+        _numChargeTicks = 0;
+        _orbState = OrbState.ReadyPosition;
+    }
+    public void StartCharging()
+    {
+        if (_orbState == OrbState.ReadyPosition)
+        {
+            _chargeTimer = 0f;
+            _numChargeTicks = 0;
+            _orbState = OrbState.Charging;
+        }
     }
 
     public void Launch()
     {
-        _orbState = OrbState.InFlight;
+        if (_orbState == OrbState.Charging)
+        {
+            _orbState = OrbState.InFlight;
+        }
     }
 
 }
