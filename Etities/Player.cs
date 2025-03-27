@@ -2,6 +2,8 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Diagnostics;
+using System.Reflection.Metadata;
 
 namespace Orbarella;
 public class Player
@@ -41,6 +43,12 @@ public class Player
     public Texture2D _boundsTest {  get; set; }
 
     public CannonData CannonData => new CannonData(_barrel.Position, Angle);
+    //{
+    //    get
+    //    {
+    //        return new CannonData(_barrel.Position, Angle);
+    //    }        
+    //}
 
     public Player(Texture2D wizard, Texture2D cannonBase, Texture2D cannonBarrel, int streetLevel, int rightEdge)
     {
@@ -121,12 +129,6 @@ public class Player
         // rotate the cannon barrel
         Angle = MathHelper.Clamp(Angle, MIN_ANGLE, MAX_ANGLE);
         _barrel.Rotation = MathHelper.ToRadians(Angle - 90); // -90 to account for the 90 degree starting angle
-
-        //// move the orb with the barrel as it rotates
-        //float rad = MathHelper.ToRadians(Angle - 90f); // Subtract 90 to account for the initial right-facing angle
-        //float xOffset = _orbPositionOffset.X * (float)Math.Cos(rad) - _orbPositionOffset.Y * (float)Math.Sin(rad);
-        //float yOffset = _orbPositionOffset.X * (float)Math.Sin(rad) + _orbPositionOffset.Y * (float)Math.Cos(rad);
-        //_orbPosition = _barrel.Position + new Vector2(xOffset, yOffset);
 
         // update the sprites
         _wizard.Update(gt);

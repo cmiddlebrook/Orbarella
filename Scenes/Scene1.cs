@@ -62,6 +62,14 @@ public class Scene1 : GameScene
         {
             _player.MoveRight();
         }
+        else if (_ih.StartKeyPress(Keys.Space))
+        {
+            _orb.StartCharging();
+        }
+        else if (_ih.KeyReleased(Keys.Space))
+        {
+            _orb.Launch();
+        }
 
         if (_ih.KeyDown(Keys.E))
         {
@@ -72,14 +80,6 @@ public class Scene1 : GameScene
             _player.RotateBarrelLeft();
         }
 
-        if (_ih.StartKeyPress(Keys.Space))
-        {
-            _orb.StartCharging();
-        }
-        else if (_ih.KeyReleased(Keys.Space))
-        {
-            _orb.Launch();
-        }
 
         if (_ih.KeyPressed(Keys.P))
         {

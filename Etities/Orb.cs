@@ -15,9 +15,10 @@ public class Orb
     }
 
     private const int MAX_CHARGE_TICKS = 11;
-    private const double TICK_TIME = 1.2f / MAX_CHARGE_TICKS;
-    private const float GRAVITY = 3f;
+    private const double TICK_TIME = 1.0f / MAX_CHARGE_TICKS;
+    private const float GRAVITY = 50f;
 
+    private CannonData _cannonData;
     private SpriteObject _orb;
     private SpriteObject _progressBarContainer;
     private Texture2D _progressBarTick;
@@ -25,7 +26,7 @@ public class Orb
     private Rectangle _playArea;
     private Vector2 _positionOffset;
     private Vector2 _trajectory;
-    private float _baseSpeed = 2f;
+    private float _baseSpeed = 4f;
     private double _chargeTimer = 0f;
     private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
@@ -57,6 +58,7 @@ public class Orb
 
     public void Update(GameTime gt, CannonData cannonData)
     {
+        _cannonData = cannonData;
         switch (_orbState)
         {
             case OrbState.ReadyPosition:
@@ -66,7 +68,7 @@ public class Orb
                     float xOffset = _positionOffset.X * (float)Math.Cos(rad) - _positionOffset.Y * (float)Math.Sin(rad);
                     float yOffset = _positionOffset.X * (float)Math.Sin(rad) + _positionOffset.Y * (float)Math.Cos(rad);
                     _trajectory = new Vector2(xOffset, yOffset);
-                    _orb.Position = cannonData.CannonOrigin + _trajectory;
+                    _orb.Position = _cannonData.CannonOrigin + _trajectory;
                     _progressBarContainer.Position = _orb.Position + new Vector2(-40, -50);
                     break;
                 }
@@ -86,10 +88,10 @@ public class Orb
                     }
                     else
                     {
-                        _trajectory.Y += GRAVITY;
+                        double delta = gt.ElapsedGameTime.TotalSeconds;
                         double speed = (_baseSpeed + _numChargeTicks);
-                        _orb.Position += _trajectory * (float)(speed * gt.ElapsedGameTime.TotalSeconds);
-                        Debug.WriteLine($"Orb Position: {_orb.Position}");
+                        _orb.Position += _trajectory * (float)(speed * delta);
+                        _trajectory.Y += (float)(GRAVITY * delta);
                     }
                     break;
                 }
