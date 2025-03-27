@@ -17,6 +17,7 @@ public class Orb
     private const int MAX_CHARGE_TICKS = 11;
     private const double TICK_TIME = 1.0f / MAX_CHARGE_TICKS;
     private const float GRAVITY = 50f;
+    private const float BASE_SPEED = 4f;
 
     private CannonData _cannonData;
     private SpriteObject _orb;
@@ -26,7 +27,6 @@ public class Orb
     private Rectangle _playArea;
     private Vector2 _positionOffset;
     private Vector2 _trajectory;
-    private float _baseSpeed = 4f;
     private double _chargeTimer = 0f;
     private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
@@ -89,7 +89,7 @@ public class Orb
                     else
                     {
                         double delta = gt.ElapsedGameTime.TotalSeconds;
-                        double speed = (_baseSpeed + _numChargeTicks);
+                        double speed = (BASE_SPEED + _numChargeTicks);
                         _orb.Position += _trajectory * (float)(speed * delta);
                         _trajectory.Y += (float)(GRAVITY * delta);
                     }
