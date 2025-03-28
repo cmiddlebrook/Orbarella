@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Orbarella;
@@ -21,6 +22,7 @@ public class Orb
 
     private CannonData _cannonData;
     private SpriteObject _orb;
+    private SpriteObject _orbSelectIndicator;
     private SpriteObject _progressBarContainer;
     private Texture2D _progressBarTick;
     private Vector2[] _progressBarTickPositions;
@@ -31,16 +33,22 @@ public class Orb
     private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
     private bool _pulseGrow = true;
+    //private List<Nightmare> _nightmares;
+    private List<Color> _orbColours = new List<Color>();
+    private int _currentColour = 0;
 
-    public Orb(Texture2D orb, Texture2D progressBarContainer, Texture2D progressBarTick, Vector2 positionOffset, Rectangle playArea)
+    public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
         _positionOffset = positionOffset;
-        _progressBarContainer = new SpriteObject(progressBarContainer);
-        _progressBarTick = progressBarTick;
+        _progressBarContainer = new SpriteObject(am.LoadTexture("progress-bar-container"));
+        _progressBarTick = am.LoadTexture("progress-bar-tick");
         _playArea = playArea;
+        var orb = am.LoadTexture("orb-greyscale");
         _orb = new SpriteObject(orb);
+        _orbSelectIndicator = new SpriteObject(orb, new Vector2(10, 10), Vector2.Zero, 2.5f);
         _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
         SetupProgressBar();
+        SetupOrbColours(nightmares);
     }
 
     private void SetupProgressBar()
@@ -54,7 +62,14 @@ public class Orb
             _progressBarTickPositions[i] = new Vector2(x, y);
             x += 8;
         }
+    }
 
+    private void SetupOrbColours(List<Nightmare> nightmares)
+    {
+        foreach (Nightmare nightmare in nightmares)
+        {
+            _orbColours.Add(nightmare.Colour);
+        }        
     }
 
     public void Update(GameTime gt, CannonData cannonData)
@@ -114,7 +129,10 @@ public class Orb
 
     public void Draw(SpriteBatch sb)
     {
+        _orb.Colour = _orbColours[_currentColour];
         _orb.Draw(sb);
+        _orbSelectIndicator.Colour = _orbColours[_currentColour];
+        _orbSelectIndicator.Draw(sb);
 
         if (_orbState == OrbState.Charging)
         {
@@ -149,6 +167,16 @@ public class Orb
         {
             _orbState = OrbState.InFlight;
         }
+    }
+
+    public void SelectNextColour()
+    {
+        _currentColour = (_currentColour + 1) % _orbColours.Count;
+    }
+
+    public void SelectPreviousColour()
+    {
+        _currentColour = (_currentColour - 1 + _orbColours.Count) % _orbColours.Count;
     }
 
 }

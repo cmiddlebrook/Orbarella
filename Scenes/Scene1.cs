@@ -51,13 +51,9 @@ public class Scene1 : GameScene
                                 streetLevel + 20,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
-        _orb = new Orb( _am.LoadTexture("orb-green2"), 
-                        _am.LoadTexture("progress-bar-empty"),
-                        _am.LoadTexture("progress-bar-tick"),
-                        new Vector2(cannonBarrel.Width - 20, -7), 
-                        playArea);
 
         LoadNightmares();
+        _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
     }
 
     private void LoadBuildings(Rectangle playArea, int streetLevel)
@@ -92,7 +88,15 @@ public class Scene1 : GameScene
 
     public override void HandleInput(GameTime gt)
     {
-        if (_ih.KeyDown(Keys.A))
+        if (_ih.KeyPressed(Keys.Down))
+        {
+            _orb.SelectNextColour();
+        }
+        else if (_ih.KeyPressed(Keys.Up))
+        {
+            _orb.SelectPreviousColour();
+        }
+        else if (_ih.KeyDown(Keys.A))
         {
             _player.MoveLeft();
         }
