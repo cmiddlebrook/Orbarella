@@ -17,6 +17,8 @@ public class Building
 
     public Rectangle Bounds => _building.Bounds;
 
+    public List<Dreamer> Dreamers => _dreamers;
+
     public Building(AssetManager am,
                     BuildingData data,
                     int rightEdge, 

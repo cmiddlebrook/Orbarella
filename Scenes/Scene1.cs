@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace Orbarella;
 public class Scene1 : GameScene
 {
-    private const float NEW_NIGHTMARE_SPAWN = 3f;
+    private const float NEW_NIGHTMARE_SPAWN = 2.5f;
 
     private Texture2D _background;
     private Texture2D _streetBase;
@@ -22,6 +22,8 @@ public class Scene1 : GameScene
     private Player _player;
     private Orb _orb;
     private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+    private TextObject _scoreText;
+    int _score = 0;
     static Random _random = new Random();
 
 
@@ -41,6 +43,8 @@ public class Scene1 : GameScene
         _streetBase = _am.LoadTexture("street-base");
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
+        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(100, 12));
+        _scoreText.Colour = Color.DarkSlateGray;
 
         LoadBuildings(playArea, streetLevel);
 
@@ -136,12 +140,12 @@ public class Scene1 : GameScene
 
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
         _newDreamerTimer -= delta;
-
-
         if (_newDreamerTimer < 0)
         {
             StartNightmare();
         }
+
+        HandleCollisions();
 
         foreach (Building building in _buildings)
         {
@@ -159,10 +163,51 @@ public class Scene1 : GameScene
         _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
     }
 
+    private void HandleCollisions()
+    {
+        if (_orb.State != Orb.OrbState.InFlight) return;
+
+        foreach (Building building in _buildings)
+        {
+            if (_orb.Bounds.Intersects(building.Bounds))
+            {
+                HandleCollisions(building);
+            }
+        }
+    }
+
+    private void HandleCollisions(Building building)
+    {
+        foreach (Dreamer dreamer in building.Dreamers)
+        {
+            if (dreamer.IsDreaming)
+            {
+                if (_orb.Bounds.Intersects(dreamer.Bounds))
+                {
+                    _orb.Reload();
+
+                    if (dreamer.IsColourMatch(_orb.Colour))
+                    {
+                        _score += 100;
+                        dreamer.StopNightmare(Dreamer.DreamEndState.SoothedGreat);
+                    }
+                    else
+                    {
+                        _score += 10;
+                        dreamer.StopNightmare(Dreamer.DreamEndState.SoothedGood);
+                    }
+                }
+            }
+        }
+
+    }
+
     public override void Draw(SpriteBatch sb)
     {
         sb.Draw(_background, Vector2.Zero, Color.White);
+
         DrawStreetBase(sb);
+        _scoreText.DrawText(sb, "Score: " + _score.ToString());
         foreach (Building building in _buildings)
         {
             building.Draw(sb);

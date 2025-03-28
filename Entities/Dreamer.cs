@@ -7,8 +7,14 @@ using System.Collections.Generic;
 namespace Orbarella;
 public class Dreamer
 {
-    private Color _defaultWindowColour = new Color(34, 46, 59);
+    public enum DreamEndState
+    {
+        TimedOut,
+        SoothedGood,
+        SoothedGreat,
+    }
 
+    private Color _defaultWindowColour = new Color(34, 46, 59);
     private SpriteObject _window;
     private SpriteObject _dream;
     private List<Nightmare> _nightmares;
@@ -16,7 +22,10 @@ public class Dreamer
     private bool _isDreaming = false;
     private float _dreamDuration;
     private float _dreamTimer;
+    private DreamEndState _dreamEndState = DreamEndState.TimedOut;
     static Random _random = new Random();
+
+    public Rectangle Bounds => _window.Bounds;
 
     public bool IsDreaming => _isDreaming;
 
@@ -38,8 +47,7 @@ public class Dreamer
             _dreamTimer -= delta;
             if (_dreamTimer <= 0)
             {
-                _isDreaming = false;
-                _window.Colour = _defaultWindowColour;                
+                StopNightmare(DreamEndState.TimedOut);
             }
         }
 
@@ -58,10 +66,22 @@ public class Dreamer
     {
         _isDreaming = true;
         _dreamTimer = _dreamDuration;
-        var nightmare = _nightmares[_random.Next(_nightmares.Count)];
-        _window.Colour = nightmare.Colour;
+        _nightmare = _nightmares[_random.Next(_nightmares.Count)];
+        _window.Colour = _nightmare.Colour;
         var nightmarePos = new Vector2(_window.Position.X - 5, _window.Position.Y +4);
-        _dream = new SpriteObject(nightmare.Texture, nightmarePos, Vector2.Zero, 1.0f);
+        _dream = new SpriteObject(_nightmare.Texture, nightmarePos, Vector2.Zero, 1.0f);
+    }
+
+    public void StopNightmare(DreamEndState dreamEndState)
+    {
+        _isDreaming = false;
+        _window.Colour = _defaultWindowColour;
+        _dreamEndState = dreamEndState;
+    }
+
+    public bool IsColourMatch(Color colour)
+    {
+        return _nightmare.Colour == colour;
     }
 
 

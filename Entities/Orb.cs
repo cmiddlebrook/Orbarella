@@ -8,7 +8,7 @@ using System.Diagnostics;
 namespace Orbarella;
 public class Orb
 {
-    private enum OrbState
+    public enum OrbState
     {
         ReadyPosition,
         Charging,
@@ -33,9 +33,14 @@ public class Orb
     private int _numChargeTicks = 0;
     private OrbState _orbState = OrbState.ReadyPosition;
     private bool _pulseGrow = true;
-    //private List<Nightmare> _nightmares;
     private List<Color> _orbColours = new List<Color>();
     private int _currentColour = 0;
+
+    public Rectangle Bounds => _orb.Bounds;
+
+    public Color Colour => _orb.Colour;
+
+    public OrbState State => _orbState;
 
     public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
@@ -143,6 +148,7 @@ public class Orb
                 sb.Draw(_progressBarTick, _progressBarContainer.Position + _progressBarTickPositions[i], Color.White);
             }
         }
+
     }
 
     public void Reload()
