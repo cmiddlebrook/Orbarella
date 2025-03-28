@@ -15,7 +15,7 @@ public class Building
     public Building(Texture2D building, int rightEdge, int streetLevel, List<WindowPosition> windows)
     {
         _streetLevel = streetLevel;
-        var position = new Vector2(rightEdge - building.Width, streetLevel - building.Height);
+        var position = new Vector2(rightEdge - building.Width - 10, streetLevel - building.Height);
         _building = new SpriteObject(building, position, Vector2.Zero, 1.0f);
     }
 

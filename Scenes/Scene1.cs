@@ -42,7 +42,7 @@ public class Scene1 : GameScene
         _player = new Player(   _am.LoadTexture("wizard"),
                                 _am.LoadTexture("CannonBase"),
                                 cannonBarrel, 
-                                streetLevel,
+                                streetLevel + 20,
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
         _orb = new Orb( _am.LoadTexture("orb-green2"), 
