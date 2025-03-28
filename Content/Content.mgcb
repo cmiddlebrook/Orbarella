@@ -164,6 +164,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/fear.png
 
+#begin Textures/frustration.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/frustration.png
+
 #begin Textures/good.png
 /importer:TextureImporter
 /processor:TextureProcessor

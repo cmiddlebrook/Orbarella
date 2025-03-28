@@ -7,14 +7,17 @@ using System.Collections.Generic;
 namespace Orbarella;
 public class Nightmare
 {
-    private string Name { get; set; }
-    private string Texture { get; set; }
-    private Color Colour { get; set; }
+    private string Name { get; }
+    public Texture2D Texture { get; }
+    public Color Colour { get; }
 
-    public Nightmare(NightmareData data)
+    public Color SootheColour { get; }
+
+    public Nightmare(AssetManager am, NightmareData data)
     {
         Name = data.Name;
-        Texture = data.Texture;
+        Texture = am.LoadTexture(data.Texture);
         Colour = new Color(data.Colour[0], data.Colour[1], data.Colour[2]);
+        SootheColour = new Color(255 - data.Colour[0], 255 - data.Colour[1], 255 - data.Colour[2]);
     }
 }

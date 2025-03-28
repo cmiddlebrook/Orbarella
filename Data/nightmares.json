@@ -2,37 +2,37 @@
   {
     "Name": "anger",
     "Texture": "anger",
-    "Colour": [ 255, 0, 0 ]
+    "Colour": [ 202, 65, 65 ]
   },
 
   {
     "Name": "anxiety",
     "Texture": "anxiety",
-    "Colour": [ 154, 205, 50 ]
+    "Colour": [ 210, 166, 65 ]
   },
 
   {
     "Name": "fear",
     "Texture": "fear",
-    "Colour": [ 0, 128, 0 ]
+    "Colour": [ 119, 71, 192 ]
   },
 
   {
     "Name": "frustration",
     "Texture": "frustration",
-    "Colour": [ 255, 140, 0 ]
+    "Colour": [ 55, 143, 13 ]
   },
 
   {
     "Name": "pain",
     "Texture": "pain",
-    "Colour": [ 128, 0, 128 ]
+    "Colour": [ 230, 230, 230 ]
   },
 
   {
     "Name": "sadness",
     "Texture": "sadness",
-    "Colour": [ 70, 130, 180 ]
+    "Colour": [ 48, 90, 156 ]
   }
 
 ]

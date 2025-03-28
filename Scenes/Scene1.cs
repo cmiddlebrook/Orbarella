@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace Orbarella;
 public class Scene1 : GameScene
 {
-    private const float NEW_DREAMER_SPAWN = 2f;
+    private const float NEW_NIGHTMARE_SPAWN = 3f;
 
     private Texture2D _background;
     private Texture2D _streetBase;
@@ -21,7 +21,7 @@ public class Scene1 : GameScene
     private List<Nightmare> _nightmares = new List<Nightmare>();
     private Player _player;
     private Orb _orb;
-    private float _newDreamerTimer = NEW_DREAMER_SPAWN;
+    private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
     static Random _random = new Random();
 
 
@@ -81,8 +81,13 @@ public class Scene1 : GameScene
 
         foreach (NightmareData data in nightmares)
         {
-            _nightmares.Add(new Nightmare(data));
+            _nightmares.Add(new Nightmare(_am, data));
         }
+    }
+
+    public override void Enter()
+    {
+        StartNightmare();
     }
 
     public override void HandleInput(GameTime gt)
@@ -131,9 +136,7 @@ public class Scene1 : GameScene
 
         if (_newDreamerTimer < 0)
         {
-            var buildingIdx = _random.Next(_buildings.Count - 1); // -1 to account for the blank house on every level
-            _buildings[buildingIdx].SpawnDreamer();
-            _newDreamerTimer = _newDreamerTimer = NEW_DREAMER_SPAWN;
+            StartNightmare();
         }
 
         foreach (Building building in _buildings)
@@ -143,6 +146,13 @@ public class Scene1 : GameScene
         _player.Update(gt);
         _orb.Update(gt, _player.CannonData);
         HandleInput(gt);
+    }
+
+    private void StartNightmare()
+    {
+        var buildingIdx = _random.Next(_buildings.Count - 1); // -1 to account for the blank house on every level
+        _buildings[buildingIdx].StartNightmare();
+        _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
     }
 
     public override void Draw(SpriteBatch sb)

@@ -11,8 +11,7 @@ public class Building
 
     private SpriteObject _building;
     private int _streetLevel;
-    List<SpriteObject> _windows;
-    private Color _defaultWindowColour = new Color(34, 46, 59);
+    List<Dreamer> _dreamers;
     private List<Nightmare> _nightmares;
     static Random _random = new Random();
 
@@ -34,23 +33,15 @@ public class Building
 
     private void CreateWindows(Texture2D windowTX, List<WindowPosition> windows)
     {
-        _windows = new List<SpriteObject>();
+        _dreamers = new List<Dreamer>();
         foreach (WindowPosition wp in windows)
         {
             var position = new Vector2(_building.Position.X + wp.X, _building.Position.Y + wp.Y);
             var window = new SpriteObject(windowTX, position, Vector2.Zero, 1.0f);
-            window.Colour = _defaultWindowColour;
-            //window.Colour = GetRandomColour();
-            _windows.Add(window);
-        }
-    }
 
-    private Color GetRandomColour()
-    {
-        var r = _random.Next(0, 256);
-        var g = _random.Next(0, 256);
-        var b = _random.Next(0, 256);
-        return new Color(r, g, b);
+            var dreamer = new Dreamer(window, _nightmares);
+            _dreamers.Add(dreamer);
+        }
     }
 
     public void Update(GameTime gt)
@@ -58,25 +49,32 @@ public class Building
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
 
         _building.Update(gt);
-        foreach (SpriteObject window in _windows)
+        foreach (Dreamer dreamer in _dreamers)
         {
-            window.Update(gt);
+            dreamer.Update(gt);
         }
     }
 
-    public void SpawnDreamer()
+    public void StartNightmare()
     {
-        var index = _random.Next(_windows.Count);
-        var window = _windows[index];
-        window.Colour = GetRandomColour();
+        bool newNightmare = false;
+        while (!newNightmare)
+        {
+            var dreamer = _dreamers[_random.Next(_dreamers.Count)];
+            if (!dreamer.IsDreaming)
+            {
+                dreamer.StartNightmare();
+                newNightmare = true;
+            }
+        }
     }
 
     public void Draw(SpriteBatch sb)
     {
         _building.Draw(sb);
-        foreach (SpriteObject window in _windows)
+        foreach (Dreamer dreamer in _dreamers)
         {
-            window.Draw(sb);
+            dreamer.Draw(sb);
         }
     }
 }
