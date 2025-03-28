@@ -62,7 +62,11 @@ public class Scene1 : GameScene
         int rightEdge = playArea.Width;
         foreach (BuildingData bd in buildings)
         {
-            Building building = new Building(_am.LoadTexture(bd.Name), rightEdge, streetLevel, bd.Windows);
+            Building building = new Building(   _am.LoadTexture(bd.Name),
+                                                _am.LoadTexture("window"),
+                                                rightEdge, 
+                                                streetLevel, 
+                                                bd.Windows);
             _buildings.Add(building);
             rightEdge = building.Bounds.Left;
         }
