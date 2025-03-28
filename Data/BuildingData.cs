@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
 
+namespace Orbarella;
+
 public class BuildingData
 {
     public string Name { get; set; }

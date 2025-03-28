@@ -1,0 +1,38 @@
+[
+  {
+    "Name": "anger",
+    "Texture": "anger",
+    "Colour": [ 255, 0, 0 ]
+  },
+
+  {
+    "Name": "anxiety",
+    "Texture": "anxiety",
+    "Colour": [ 154, 205, 50 ]
+  },
+
+  {
+    "Name": "fear",
+    "Texture": "fear",
+    "Colour": [ 0, 128, 0 ]
+  },
+
+  {
+    "Name": "frustration",
+    "Texture": "frustration",
+    "Colour": [ 255, 140, 0 ]
+  },
+
+  {
+    "Name": "pain",
+    "Texture": "pain",
+    "Colour": [ 128, 0, 128 ]
+  },
+
+  {
+    "Name": "sadness",
+    "Texture": "sadness",
+    "Colour": [ 70, 130, 180 ]
+  }
+
+]
