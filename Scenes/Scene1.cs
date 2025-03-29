@@ -21,7 +21,9 @@ public class Scene1 : GameScene
     private List<Nightmare> _nightmares = new List<Nightmare>();
     private Player _player;
     private Orb _orb;
+    private NightmareMeter _nightmareMeter;
     private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+    private int _numResidents;
     private TextObject _scoreText;
     int _score = 0;
     static Random _random = new Random();
@@ -43,8 +45,9 @@ public class Scene1 : GameScene
         _streetBase = _am.LoadTexture("street-base");
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
-        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(12, 12));
+        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(40, 12));
         _scoreText.Colour = Color.DarkSlateGray;
+        _nightmareMeter = new NightmareMeter(_am);
 
         LoadBuildings(playArea, streetLevel);
 
@@ -151,6 +154,7 @@ public class Scene1 : GameScene
         {
             building.Update(gt);
         }
+        _nightmareMeter.Update(gt);
         _player.Update(gt);
         _orb.Update(gt, _player.CannonData);
         HandleInput(gt);
@@ -182,36 +186,16 @@ public class Scene1 : GameScene
         {
             if (_orb.Bounds.Intersects(building.Bounds))
             {
-                HandleCollisions(building);
-            }
-        }
-    }
-
-    private void HandleCollisions(Building building)
-    {
-        foreach (Dreamer dreamer in building.Dreamers)
-        {
-            if (dreamer.IsDreaming)
-            {
-                if (_orb.Bounds.Intersects(dreamer.Bounds))
+                var (isCollision, isCorrectColour) = building.HandleCollisions(_orb);
+                if (isCollision)
                 {
                     _orb.Reload();
-
-                    if (dreamer.IsColourMatch(_orb.Colour))
-                    {
-                        _score += 100;
-                        building.StopNightmare(dreamer, Dreamer.DreamEndState.SoothedGreat);
-                    }
-                    else
-                    {
-                        _score += 10;
-                        building.StopNightmare(dreamer, Dreamer.DreamEndState.SoothedGood);
-                    }
+                    _score += isCorrectColour ? 100 : 10;
                 }
             }
         }
-
     }
+
 
     public override void Draw(SpriteBatch sb)
     {
@@ -223,6 +207,7 @@ public class Scene1 : GameScene
         {
             building.Draw(sb);
         }
+        _nightmareMeter.Draw(sb);
         _orb.Draw(sb);
         _player.Draw(sb);
     }

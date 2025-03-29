@@ -5,14 +5,8 @@ using System;
 using System.Collections.Generic;
 
 namespace Orbarella;
-public class Dreamer
+public class Dreamer : GameObject
 {
-    public enum DreamEndState
-    {
-        TimedOut,
-        SoothedGood,
-        SoothedGreat,
-    }
 
     private Color _defaultWindowColour = new Color(34, 46, 59);
     private SpriteObject _window;
@@ -22,7 +16,6 @@ public class Dreamer
     private bool _isDreaming = false;
     private float _dreamDuration;
     private float _dreamTimer;
-    private DreamEndState _dreamEndState = DreamEndState.TimedOut;
     static Random _random = new Random();
 
     public Rectangle Bounds => _window.Bounds;
@@ -38,7 +31,7 @@ public class Dreamer
         _dreamTimer = _dreamDuration;
     }
 
-    public void Update(GameTime gt)
+    public override void Update(GameTime gt)
     {
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
 
@@ -47,13 +40,13 @@ public class Dreamer
             _dreamTimer -= delta;
             if (_dreamTimer <= 0)
             {
-                StopNightmare(DreamEndState.TimedOut);
+                StopNightmare(false, false);
             }
         }
 
     }
 
-    public void Draw(SpriteBatch sb)
+    public override void Draw(SpriteBatch sb)
     {
         _window.Draw(sb);
         if (_isDreaming)
@@ -72,11 +65,17 @@ public class Dreamer
         _dream = new SpriteObject(_nightmare.Texture, nightmarePos, Vector2.Zero, 1.0f);
     }
 
-    public void StopNightmare(DreamEndState dreamEndState)
+    public void StopNightmare(bool isSoothed, bool isCorrectColour)
     {
         _isDreaming = false;
         _window.Colour = _defaultWindowColour;
-        _dreamEndState = dreamEndState;
+
+        if (isSoothed)
+        {
+            // TODO: display an animation to indicate a positive feedback
+            // play some kind of sound
+            // prevent this dreamer from starting a new nightmare for a few seconds
+        }
     }
 
     public bool IsColourMatch(Color colour)

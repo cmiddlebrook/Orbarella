@@ -3,11 +3,10 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using static Orbarella.Dreamer;
+
 
 namespace Orbarella;
-public class Building
+public class Building : GameObject
 {
 
     private SpriteObject _building;
@@ -19,8 +18,6 @@ public class Building
     static Random _random = new Random();
 
     public Rectangle Bounds => _building.Bounds;
-
-    public List<Dreamer> Dreamers => _dreamers;
 
     public Building(AssetManager am,
                     BuildingData data,
@@ -50,7 +47,7 @@ public class Building
         _totalDreamers = _dreamers.Count;
     }
 
-    public void Update(GameTime gt)
+    public override void Update(GameTime gt)
     {
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
 
@@ -76,13 +73,30 @@ public class Building
         return false;
     }
 
-    public void StopNightmare(Dreamer dreamer, DreamEndState dreamEndState)
+    public void StopNightmare(Dreamer dreamer, bool isCorrectColour)
     {
         _numDreaming--;
-        dreamer.StopNightmare(dreamEndState);
+        dreamer.StopNightmare(true, isCorrectColour);
     }
 
-    public void Draw(SpriteBatch sb)
+    public (bool isCollision, bool isCorrectColour) HandleCollisions(Orb orb)
+    {
+        bool isCollision = false;
+        bool isCorrectColour = false;
+        foreach (Dreamer dreamer in _dreamers)
+        {
+            if (dreamer.IsDreaming && orb.Bounds.Intersects(dreamer.Bounds))
+            {
+                isCollision = true;
+                isCorrectColour = (dreamer.IsColourMatch(orb.Colour));
+                StopNightmare (dreamer, isCorrectColour);
+            }
+        }
+
+        return (isCollision, isCorrectColour);
+    }
+
+    public override void Draw(SpriteBatch sb)
     {
         _building.Draw(sb);
         foreach (Dreamer dreamer in _dreamers)

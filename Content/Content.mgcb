@@ -327,6 +327,30 @@
 /processorParam:TextureFormat=Color
 /build:Textures/house9.png
 
+#begin Textures/mightmare-meter-tick.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/mightmare-meter-tick.png
+
+#begin Textures/nightmare-meter-container.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/nightmare-meter-container.png
+
 #begin Textures/orb-greyscale.png
 /importer:TextureImporter
 /processor:TextureProcessor
