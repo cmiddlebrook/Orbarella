@@ -24,6 +24,8 @@ public class Scene1 : GameScene
     private NightmareMeter _nightmareMeter;
     private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
     private int _numResidents;
+    private float _nightmareIncrement;
+    private float _cityNightmareLevel;
     private TextObject _scoreText;
     int _score = 0;
     static Random _random = new Random();
@@ -61,6 +63,8 @@ public class Scene1 : GameScene
 
         LoadNightmares();
         _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
+
+        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * 2.0f;
     }
 
     private void LoadBuildings(Rectangle playArea, int streetLevel)
@@ -74,6 +78,7 @@ public class Scene1 : GameScene
             var building = new Building(_am, data, rightEdge, streetLevel, _nightmares);
             _buildings.Add(building);
             rightEdge = building.Bounds.Left;
+            _numResidents += building.NumResidents;
         }
     }
 
@@ -150,11 +155,15 @@ public class Scene1 : GameScene
 
         HandleCollisions();
 
+        _cityNightmareLevel = 0f;
         foreach (Building building in _buildings)
         {
             building.Update(gt);
+            _cityNightmareLevel += (building.NumDreaming * _nightmareIncrement);
         }
+        _nightmareMeter.SetLevel(_cityNightmareLevel);
         _nightmareMeter.Update(gt);
+
         _player.Update(gt);
         _orb.Update(gt, _player.CannonData);
         HandleInput(gt);

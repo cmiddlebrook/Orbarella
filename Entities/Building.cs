@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 
 namespace Orbarella;
@@ -13,11 +14,15 @@ public class Building : GameObject
     private int _streetLevel;
     List<Dreamer> _dreamers;
     private List<Nightmare> _nightmares;
-    private int _totalDreamers = 0;
-    private int _numDreaming = 0;
+    private int _numResidents = 0;
     static Random _random = new Random();
 
     public Rectangle Bounds => _building.Bounds;
+
+    public int NumResidents => _numResidents;
+
+    public int NumDreaming => _dreamers.Count(dreamer => dreamer.IsDreaming);
+
 
     public Building(AssetManager am,
                     BuildingData data,
@@ -44,7 +49,7 @@ public class Building : GameObject
             var dreamer = new Dreamer(window, _nightmares);
             _dreamers.Add(dreamer);
         }
-        _totalDreamers = _dreamers.Count;
+        _numResidents = _dreamers.Count;
     }
 
     public override void Update(GameTime gt)
@@ -60,13 +65,12 @@ public class Building : GameObject
 
     public bool StartNightmare()
     {
-        if (_numDreaming < _totalDreamers)
+        if (NumDreaming < _numResidents)
         {
             var dreamer = _dreamers[_random.Next(_dreamers.Count)];
             if (!dreamer.IsDreaming)
             {
                 dreamer.StartNightmare();
-                _numDreaming++;
                 return true;
             }
         }
@@ -75,7 +79,6 @@ public class Building : GameObject
 
     public void StopNightmare(Dreamer dreamer, bool isCorrectColour)
     {
-        _numDreaming--;
         dreamer.StopNightmare(true, isCorrectColour);
     }
 
@@ -90,6 +93,7 @@ public class Building : GameObject
                 isCollision = true;
                 isCorrectColour = (dreamer.IsColourMatch(orb.Colour));
                 StopNightmare (dreamer, isCorrectColour);
+                break;
             }
         }
 

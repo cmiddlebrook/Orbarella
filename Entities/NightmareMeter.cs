@@ -1,6 +1,7 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 namespace Orbarella;
 public class NightmareMeter
@@ -11,6 +12,8 @@ public class NightmareMeter
     private Vector2[] _tickPositions;
     private Color[] _tickColours;
     private int _numTicks;
+
+    public int NumTicks => MAX_TICKS;
 
     public NightmareMeter(AssetManager am)
     {
@@ -41,6 +44,11 @@ public class NightmareMeter
         }
     }
 
+    public void SetLevel(float level)
+    {
+        _numTicks = (int)Math.Floor(level);
+    }
+
     public void Update(GameTime gt)
     { 
 
@@ -49,7 +57,6 @@ public class NightmareMeter
     public void Draw(SpriteBatch sb)
     {
         _container.Draw(sb);
-        _numTicks = 24;
         for (int i = 0; i < _numTicks; i++)
         {
             sb.Draw(_tick, _container.Position + _tickPositions[i], _tickColours[i]);
