@@ -43,7 +43,7 @@ public class Scene1 : GameScene
         _streetBase = _am.LoadTexture("street-base");
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
-        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(100, 12));
+        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(12, 12));
         _scoreText.Colour = Color.DarkSlateGray;
 
         LoadBuildings(playArea, streetLevel);
@@ -158,9 +158,20 @@ public class Scene1 : GameScene
 
     private void StartNightmare()
     {
-        var buildingIdx = _random.Next(_buildings.Count - 1); // -1 to account for the blank house on every level
-        _buildings[buildingIdx].StartNightmare();
-        _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+        int numBuildingsTested = 0;
+        int numMaxBuildings = _buildings.Count - 1; // -1 to account for the blank house on every level
+        bool newNightmare = false;
+        while (!newNightmare && numBuildingsTested < numMaxBuildings)
+        {
+            var buildingIdx = _random.Next(numMaxBuildings); 
+            newNightmare = _buildings[buildingIdx].StartNightmare();
+            if (newNightmare)
+            {
+                _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+                return;
+            }
+            numBuildingsTested++;
+        }
     }
 
     private void HandleCollisions()
@@ -189,12 +200,12 @@ public class Scene1 : GameScene
                     if (dreamer.IsColourMatch(_orb.Colour))
                     {
                         _score += 100;
-                        dreamer.StopNightmare(Dreamer.DreamEndState.SoothedGreat);
+                        building.StopNightmare(dreamer, Dreamer.DreamEndState.SoothedGreat);
                     }
                     else
                     {
                         _score += 10;
-                        dreamer.StopNightmare(Dreamer.DreamEndState.SoothedGood);
+                        building.StopNightmare(dreamer, Dreamer.DreamEndState.SoothedGood);
                     }
                 }
             }

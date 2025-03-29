@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using static Orbarella.Dreamer;
 
 namespace Orbarella;
 public class Building
@@ -13,6 +14,8 @@ public class Building
     private int _streetLevel;
     List<Dreamer> _dreamers;
     private List<Nightmare> _nightmares;
+    private int _totalDreamers = 0;
+    private int _numDreaming = 0;
     static Random _random = new Random();
 
     public Rectangle Bounds => _building.Bounds;
@@ -44,6 +47,7 @@ public class Building
             var dreamer = new Dreamer(window, _nightmares);
             _dreamers.Add(dreamer);
         }
+        _totalDreamers = _dreamers.Count;
     }
 
     public void Update(GameTime gt)
@@ -57,18 +61,25 @@ public class Building
         }
     }
 
-    public void StartNightmare()
+    public bool StartNightmare()
     {
-        bool newNightmare = false;
-        while (!newNightmare)
+        if (_numDreaming < _totalDreamers)
         {
             var dreamer = _dreamers[_random.Next(_dreamers.Count)];
             if (!dreamer.IsDreaming)
             {
                 dreamer.StartNightmare();
-                newNightmare = true;
+                _numDreaming++;
+                return true;
             }
         }
+        return false;
+    }
+
+    public void StopNightmare(Dreamer dreamer, DreamEndState dreamEndState)
+    {
+        _numDreaming--;
+        dreamer.StopNightmare(dreamEndState);
     }
 
     public void Draw(SpriteBatch sb)

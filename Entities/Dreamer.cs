@@ -34,7 +34,7 @@ public class Dreamer
         _window = window;
         _window.Colour = _defaultWindowColour;
         _nightmares = nightmares;
-        _dreamDuration = _random.Next(15, 30);
+        _dreamDuration = _random.Next(20, 30);
         _dreamTimer = _dreamDuration;
     }
 

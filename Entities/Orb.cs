@@ -22,7 +22,6 @@ public class Orb
 
     private CannonData _cannonData;
     private SpriteObject _orb;
-    private SpriteObject _orbSelectIndicator;
     private SpriteObject _progressBarContainer;
     private Texture2D _progressBarTick;
     private Vector2[] _progressBarTickPositions;
@@ -50,7 +49,6 @@ public class Orb
         _playArea = playArea;
         var orb = am.LoadTexture("orb-greyscale");
         _orb = new SpriteObject(orb);
-        _orbSelectIndicator = new SpriteObject(orb, new Vector2(10, 10), Vector2.Zero, 2.5f);
         _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
         SetupProgressBar();
         SetupOrbColours(nightmares);
@@ -136,8 +134,6 @@ public class Orb
     {
         _orb.Colour = _orbColours[_currentColour];
         _orb.Draw(sb);
-        _orbSelectIndicator.Colour = _orbColours[_currentColour];
-        _orbSelectIndicator.Draw(sb);
 
         if (_orbState == OrbState.Charging)
         {
