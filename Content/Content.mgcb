@@ -75,6 +75,24 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Score.spritefont
 
+#begin Music/city-ambience.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/city-ambience.ogg
+
+#begin SoundFx/cannon-roll.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/cannon-roll.wav
+
+#begin SoundFx/cannon-rotate.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/cannon-rotate.wav
+
 #begin Textures/anger.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -182,6 +200,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/frustration.png
+
+#begin Textures/game-over.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/game-over.png
 
 #begin Textures/good.png
 /importer:TextureImporter

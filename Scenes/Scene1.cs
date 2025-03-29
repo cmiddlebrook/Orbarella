@@ -13,10 +13,21 @@ using System.Diagnostics;
 namespace Orbarella;
 public class Scene1 : GameScene
 {
+    private enum PlayState
+    {
+        InPlay,
+        GameLost,
+        Sunrise,
+    }
+
     private const float NEW_NIGHTMARE_SPAWN = 2.5f;
 
+    private SoundEffectInstance _cannonRollFx;
+    private SoundEffectInstance _cannonRotateFx;
+    private Song _cityAmbience;
     private Texture2D _background;
     private Texture2D _streetBase;
+    private Texture2D _gameOver;
     private List<Building> _buildings = new List<Building>();
     private List<Nightmare> _nightmares = new List<Nightmare>();
     private Player _player;
@@ -28,6 +39,7 @@ public class Scene1 : GameScene
     private float _cityNightmareLevel;
     private TextObject _scoreText;
     int _score = 0;
+    private PlayState _playState = PlayState.InPlay;
     static Random _random = new Random();
 
 
@@ -43,8 +55,14 @@ public class Scene1 : GameScene
 
     public override void LoadContent()
     {
+        _cannonRollFx = _am.LoadLoopedSoundFx("cannon-roll");
+        _cannonRotateFx = _am.LoadLoopedSoundFx("cannon-rotate");
+        _cityAmbience = _am.LoadMusic("city-ambience");
+
+
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
+        _gameOver = _am.LoadTexture("game-over");
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
         _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(40, 12));
@@ -96,6 +114,8 @@ public class Scene1 : GameScene
     public override void Enter()
     {
         StartNightmare();
+        MediaPlayer.IsRepeating = true;
+        MediaPlayer.Play(_cityAmbience);
     }
 
     public override void HandleInput(GameTime gt)
@@ -125,6 +145,15 @@ public class Scene1 : GameScene
             _orb.Launch();
         }
 
+        if (_ih.StartKeyPress(Keys.A) || _ih.StartKeyPress(Keys.D))
+        {
+            _cannonRollFx.Play();
+        }
+        else if (_ih.KeyUp(Keys.A) && _ih.KeyUp(Keys.D))
+        {
+            _cannonRollFx.Stop();
+        }
+
         if (_ih.KeyDown(Keys.E))
         {
             _player.RotateBarrelRight();
@@ -132,6 +161,15 @@ public class Scene1 : GameScene
         else if (_ih.KeyDown(Keys.Q))
         {
             _player.RotateBarrelLeft();
+        }
+
+        if (_ih.StartKeyPress(Keys.E) || _ih.StartKeyPress(Keys.Q))
+        {
+            _cannonRotateFx.Play();
+        }
+        else if (_ih.KeyUp(Keys.E) && _ih.KeyUp(Keys.Q))
+        {
+            _cannonRotateFx.Stop();
         }
 
 
@@ -146,27 +184,45 @@ public class Scene1 : GameScene
     {
         base.Update(gt);
 
-        float delta = (float)gt.ElapsedGameTime.TotalSeconds;
-        _newDreamerTimer -= delta;
-        if (_newDreamerTimer < 0)
+        switch (_playState)
         {
-            StartNightmare();
+            case PlayState.InPlay:
+                {
+                    float delta = (float)gt.ElapsedGameTime.TotalSeconds;
+                    _newDreamerTimer -= delta;
+                    if (_newDreamerTimer < 0)
+                    {
+                        StartNightmare();
+                    }
+
+                    HandleCollisions();
+
+                    _cityNightmareLevel = 0f;
+                    foreach (Building building in _buildings)
+                    {
+                        building.Update(gt);
+                        _cityNightmareLevel += (building.NumDreaming * _nightmareIncrement);
+                    }
+                    _nightmareMeter.SetLevel(_cityNightmareLevel);
+                    _nightmareMeter.Update(gt);
+                    if (_nightmareMeter.IsFull)
+                    {
+                        _playState = PlayState.GameLost;
+                    }
+
+                    _player.Update(gt);
+                    _orb.Update(gt, _player.CannonData);
+                    HandleInput(gt);
+                    
+                    break;
+                }
+
+            case PlayState.GameLost:
+            case PlayState.Sunrise:
+            default:
+                break;
         }
 
-        HandleCollisions();
-
-        _cityNightmareLevel = 0f;
-        foreach (Building building in _buildings)
-        {
-            building.Update(gt);
-            _cityNightmareLevel += (building.NumDreaming * _nightmareIncrement);
-        }
-        _nightmareMeter.SetLevel(_cityNightmareLevel);
-        _nightmareMeter.Update(gt);
-
-        _player.Update(gt);
-        _orb.Update(gt, _player.CannonData);
-        HandleInput(gt);
     }
 
     private void StartNightmare()
@@ -219,6 +275,11 @@ public class Scene1 : GameScene
         _nightmareMeter.Draw(sb);
         _orb.Draw(sb);
         _player.Draw(sb);
+
+        if (_playState == PlayState.GameLost)
+        {
+            sb.Draw(_gameOver, new Vector2(200, 150), Color.White);
+        }
     }
 
     private void DrawStreetBase(SpriteBatch sb)

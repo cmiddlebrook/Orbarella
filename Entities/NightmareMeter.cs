@@ -15,6 +15,9 @@ public class NightmareMeter
 
     public int NumTicks => MAX_TICKS;
 
+    public bool IsFull => _numTicks == MAX_TICKS;
+
+
     public NightmareMeter(AssetManager am)
     {
         _container = new SpriteObject(am.LoadTexture("nightmare-meter-container"), new Vector2(8, 8), Vector2.Zero, 1.0f);
@@ -48,6 +51,7 @@ public class NightmareMeter
     {
         _numTicks = Math.Min((int)Math.Floor(level), MAX_TICKS);
     }
+
 
     public void Update(GameTime gt)
     { 
