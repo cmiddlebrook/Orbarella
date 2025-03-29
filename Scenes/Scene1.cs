@@ -64,7 +64,7 @@ public class Scene1 : GameScene
         LoadNightmares();
         _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
 
-        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * 2.0f;
+        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * 3.0f;
     }
 
     private void LoadBuildings(Rectangle playArea, int streetLevel)

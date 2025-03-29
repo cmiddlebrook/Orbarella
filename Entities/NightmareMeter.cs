@@ -46,7 +46,7 @@ public class NightmareMeter
 
     public void SetLevel(float level)
     {
-        _numTicks = (int)Math.Floor(level);
+        _numTicks = Math.Min((int)Math.Floor(level), MAX_TICKS);
     }
 
     public void Update(GameTime gt)
