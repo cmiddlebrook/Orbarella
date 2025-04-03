@@ -18,8 +18,6 @@ public class Dreamer : GameObject
     private float _dreamTimer;
     static Random _random = new Random();
 
-    public Rectangle Bounds => _window.Bounds;
-
     public bool IsDreaming => _isDreaming;
 
     public Dreamer(SpriteObject window, List<Nightmare> nightmares)
@@ -29,8 +27,13 @@ public class Dreamer : GameObject
         _nightmares = nightmares;
         _dreamDuration = _random.Next(20, 30);
         _dreamTimer = _dreamDuration;
+        //_drawBounds = true;
     }
 
+    protected override void UpdateBounds()
+    {
+        Bounds = _window.Bounds;
+    }
     public override void Update(GameTime gt)
     {
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
@@ -44,6 +47,8 @@ public class Dreamer : GameObject
             }
         }
 
+        base.Update(gt);
+
     }
 
     public override void Draw(SpriteBatch sb)
@@ -53,6 +58,7 @@ public class Dreamer : GameObject
         {
             _dream.Draw(sb);
         }
+        base.Draw(sb);
     }
 
     public void StartNightmare()

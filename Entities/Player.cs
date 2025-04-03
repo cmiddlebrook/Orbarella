@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.Reflection.Metadata;
 
 namespace Orbarella;
-public class Player
+public class Player : GameObject
 {
     private enum MoveState
     {
@@ -28,7 +28,6 @@ public class Player
     private Vector2 _wizardPosition;
     private Vector2 _basePositionOffset;
     private Vector2 _barrelPositionOffset;
-    private Rectangle _bounds;
     private int _rightEdge;
     private MoveState _moveState = MoveState.Stopped;
     private BarrelState _barrelState = BarrelState.Stopped;
@@ -39,7 +38,6 @@ public class Player
     private float Angle { get; set; }
 
     private float Speed { get; set; } = 400f;
-    private Rectangle Bounds => _bounds;
     public Texture2D _boundsTest {  get; set; }
 
     public CannonData CannonData => new CannonData(_barrel.Position, Angle);
@@ -58,11 +56,17 @@ public class Player
         _barrel.Origin = barrelOrigin;
         _basePositionOffset = new Vector2(68, wizard.Height - cannonBase.Height);
         _base = new SpriteObject(cannonBase, _wizardPosition + _basePositionOffset, Vector2.Zero, 1.0f);
-        _bounds = new Rectangle(_wizard.Bounds.X, _wizard.Bounds.Y, wizard.Width + cannonBarrel.Width, wizard.Height);
         Angle = 90f;
+        UpdateBounds();
+        //_drawBounds = true;
     }
 
-    public void Update(GameTime gt)
+    protected override void UpdateBounds()
+    {
+        _bounds = new Rectangle(_wizard.Bounds.X, _wizard.Bounds.Y, _wizard.Bounds.Width + _barrel.Bounds.Width, _wizard.Bounds.Height);
+    }
+
+    public override void Update(GameTime gt)
     {
         switch (_moveState)
         {
@@ -114,8 +118,8 @@ public class Player
         _wizard.Position = _wizardPosition;
         _barrel.Position = _wizardPosition + _barrelPositionOffset;
         _base.Position = _wizardPosition + _basePositionOffset;
-        _bounds.X = _wizard.Bounds.X;
-        _bounds.Y = _wizard.Bounds.Y;
+        //_bounds.X = _wizard.Bounds.X;
+        //_bounds.Y = _wizard.Bounds.Y;
         
         _moveState = MoveState.Stopped;
         _barrelState = BarrelState.Stopped;
@@ -128,18 +132,21 @@ public class Player
         _wizard.Update(gt);
         _barrel.Update(gt);
         _base.Update(gt);
+
+        base.Update(gt);
     }
 
 
-    public void Draw(SpriteBatch sb)
+    public override void Draw(SpriteBatch sb)
     {
-        //sb.Draw(_boundsTest, _bounds, Color.White);
         _wizard.Draw(sb);
         _barrel.Draw(sb);
         _base.Draw(sb);
+
+        base.Draw(sb);
     }
 
-    public void Reset()
+    public override void Reset()
     {
         _wizard.Reset();
         _barrel.Reset();

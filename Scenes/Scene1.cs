@@ -20,14 +20,16 @@ public class Scene1 : GameScene
         Sunrise,
     }
 
-    private const float NEW_NIGHTMARE_SPAWN = 2.5f;
+    private const float NEW_NIGHTMARE_SPAWN = 2.2f;
+    private const float CITY_NIGHTMARE_RATE = 1.5f;
 
     private SoundEffectInstance _cannonRollFx;
     private SoundEffectInstance _cannonRotateFx;
     private Song _cityAmbience;
+
     private Texture2D _background;
     private Texture2D _streetBase;
-    private Texture2D _gameOver;
+
     private List<Building> _buildings = new List<Building>();
     private List<Nightmare> _nightmares = new List<Nightmare>();
     private Player _player;
@@ -38,6 +40,7 @@ public class Scene1 : GameScene
     private float _nightmareIncrement;
     private float _cityNightmareLevel;
     private TextObject _scoreText;
+    private SpriteFont _gameOverText;
     int _score = 0;
     private PlayState _playState = PlayState.InPlay;
     static Random _random = new Random();
@@ -62,7 +65,7 @@ public class Scene1 : GameScene
 
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
-        _gameOver = _am.LoadTexture("game-over");
+        _gameOverText = _am.LoadFont("Title");
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
         _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(40, 12));
@@ -82,7 +85,7 @@ public class Scene1 : GameScene
         LoadNightmares();
         _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
 
-        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * 3.0f;
+        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * CITY_NIGHTMARE_RATE;
     }
 
     private void LoadBuildings(Rectangle playArea, int streetLevel)
@@ -182,8 +185,6 @@ public class Scene1 : GameScene
 
     public override void Update(GameTime gt)
     {
-        base.Update(gt);
-
         switch (_playState)
         {
             case PlayState.InPlay:
@@ -222,6 +223,8 @@ public class Scene1 : GameScene
             default:
                 break;
         }
+
+        base.Update(gt);
 
     }
 
@@ -278,7 +281,10 @@ public class Scene1 : GameScene
 
         if (_playState == PlayState.GameLost)
         {
-            sb.Draw(_gameOver, new Vector2(200, 150), Color.White);
+            var position = new Vector2(200, 150);
+            sb.DrawString(_gameOverText, "Game Over!", position, Color.Black, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0);
+            position -= new Vector2(5, 5);
+            sb.DrawString(_gameOverText, "Game Over!", position, Color.Orange, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0);
         }
     }
 

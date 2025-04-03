@@ -1,12 +1,13 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace Orbarella;
-public class Orb
+public class Orb : GameObject
 {
     public enum OrbState
     {
@@ -19,7 +20,11 @@ public class Orb
     private const double TICK_TIME = 1.0f / MAX_CHARGE_TICKS;
     private const float GRAVITY = 50f;
     private const float BASE_SPEED = 4f;
+    private const float MIN_PULSE_SCALE = 1.1f;
+    private const float MAX_PULSE_SCALE = 1.3f;
+    private const float IN_FLIGHT_SCALE = 1.2f;
 
+    private SoundEffectInstance _chargeOrbFx;
     private CannonData _cannonData;
     private SpriteObject _orb;
     private SpriteObject _progressBarContainer;
@@ -35,14 +40,13 @@ public class Orb
     private List<Color> _orbColours = new List<Color>();
     private int _currentColour = 0;
 
-    public Rectangle Bounds => _orb.Bounds;
-
-    public Color Colour => _orb.Colour;
 
     public OrbState State => _orbState;
 
     public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
+        _chargeOrbFx = am.LoadLoopedSoundFx("charge-orb");
+
         _positionOffset = positionOffset;
         _progressBarContainer = new SpriteObject(am.LoadTexture("progress-bar-container"));
         _progressBarTick = am.LoadTexture("progress-bar-tick");
@@ -52,6 +56,8 @@ public class Orb
         _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
         SetupProgressBar();
         SetupOrbColours(nightmares);
+        UpdateBounds();
+        //_drawBounds = true;
     }
 
     private void SetupProgressBar()
@@ -75,6 +81,11 @@ public class Orb
         }        
     }
 
+    protected override void UpdateBounds()
+    {
+        Bounds = _orb.Bounds;
+    }
+
     public void Update(GameTime gt, CannonData cannonData)
     {
         _cannonData = cannonData;
@@ -87,12 +98,12 @@ public class Orb
                     if (_pulseGrow)
                     {
                         _orb.Scale += delta;
-                        if (_orb.Scale >= 1.3f) _pulseGrow = false;
+                        if (_orb.Scale >= MAX_PULSE_SCALE) _pulseGrow = false;
                     }
                     else
                     {
                         _orb.Scale -= delta;
-                        if (_orb.Scale <= 1.1f) _pulseGrow = true;
+                        if (_orb.Scale <= MIN_PULSE_SCALE) _pulseGrow = true;
                     }
 
                     // move the orb with the barrel as it rotates
@@ -107,6 +118,10 @@ public class Orb
             case OrbState.Charging:
                 {
                     _chargeTimer += gt.ElapsedGameTime.TotalSeconds;
+                    if (_numChargeTicks == MAX_CHARGE_TICKS)
+                    {
+                        _chargeOrbFx.Stop();
+                    }
                     break;
                 }
             case OrbState.InFlight:
@@ -120,6 +135,7 @@ public class Orb
                     }
                     else
                     {
+                        _orb.Scale = IN_FLIGHT_SCALE;
                         _orb.Rotation += delta * BASE_SPEED;
                         float speed = (BASE_SPEED + _numChargeTicks);
                         _orb.Position += _trajectory * speed * delta;
@@ -128,9 +144,14 @@ public class Orb
                     break;
                 }
         }
+
+        _progressBarContainer.Update(gt);
+        _orb.Update(gt);
+
+        base.Update(gt);
     }
 
-    public void Draw(SpriteBatch sb)
+    public override void Draw(SpriteBatch sb)
     {
         _orb.Colour = _orbColours[_currentColour];
         _orb.Draw(sb);
@@ -145,6 +166,7 @@ public class Orb
             }
         }
 
+        base.Draw(sb);
     }
 
     public void Reload()
@@ -160,6 +182,7 @@ public class Orb
             _chargeTimer = 0f;
             _numChargeTicks = 0;
             _orbState = OrbState.Charging;
+            _chargeOrbFx.Play();
         }
     }
 
@@ -167,6 +190,7 @@ public class Orb
     {
         if (_orbState == OrbState.Charging)
         {
+            _chargeOrbFx.Stop();
             _orbState = OrbState.InFlight;
         }
     }

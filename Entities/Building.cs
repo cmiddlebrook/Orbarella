@@ -9,15 +9,12 @@ using System.Linq;
 namespace Orbarella;
 public class Building : GameObject
 {
-
     private SpriteObject _building;
     private int _streetLevel;
     List<Dreamer> _dreamers;
     private List<Nightmare> _nightmares;
     private int _numResidents = 0;
-    static Random _random = new Random();
-
-    public Rectangle Bounds => _building.Bounds;
+    static Random _random = new Random();    
 
     public int NumResidents => _numResidents;
 
@@ -36,6 +33,8 @@ public class Building : GameObject
         var position = new Vector2(rightEdge - buildingTx.Width - 10, streetLevel - buildingTx.Height);
         _building = new SpriteObject(buildingTx, position, Vector2.Zero, 1.0f);
         CreateWindows(am.LoadTexture("window"), data.Windows);
+        UpdateBounds();
+        //_drawBounds = true;
     }
 
     private void CreateWindows(Texture2D windowTX, List<WindowPosition> windows)
@@ -52,6 +51,11 @@ public class Building : GameObject
         _numResidents = _dreamers.Count;
     }
 
+    protected override void UpdateBounds()
+    {
+        Bounds = _building.Bounds;
+    }
+
     public override void Update(GameTime gt)
     {
         float delta = (float)gt.ElapsedGameTime.TotalSeconds;
@@ -61,6 +65,8 @@ public class Building : GameObject
         {
             dreamer.Update(gt);
         }
+
+        base.Update(gt);
     }
 
     public bool StartNightmare()
@@ -107,5 +113,7 @@ public class Building : GameObject
         {
             dreamer.Draw(sb);
         }
+
+        base.Draw(sb);
     }
 }

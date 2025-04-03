@@ -75,6 +75,13 @@
 /processorParam:TextureFormat=Compressed
 /build:Fonts/Score.spritefont
 
+#begin Fonts/Title.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/Title.spritefont
+
 #begin Music/city-ambience.ogg
 /importer:OggImporter
 /processor:SongProcessor
@@ -92,6 +99,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:SoundFx/cannon-rotate.wav
+
+#begin SoundFx/charge-orb.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/charge-orb.wav
 
 #begin Textures/anger.png
 /importer:TextureImporter
