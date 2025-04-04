@@ -20,7 +20,7 @@ public class Scene1 : GameScene
         Sunrise,
     }
 
-    private const float NEW_NIGHTMARE_SPAWN = 0.2f;
+    private const float NEW_NIGHTMARE_SPAWN = 2.2f;
     private const float CITY_NIGHTMARE_RATE = 1.5f;
 
     private SoundEffectInstance _cannonRollFx;
@@ -31,18 +31,22 @@ public class Scene1 : GameScene
     private Texture2D _streetBase;
 
     private List<Building> _buildings = new List<Building>();
-    private List<Nightmare> _nightmares = new List<Nightmare>();
-    private Player _player;
-    private Orb _orb;
-    private NightmareMeter _nightmareMeter;
-    private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
-    private int _numResidents;
-    private float _nightmareIncrement;
     private float _cityNightmareLevel;
-    private TextObject _scoreText;
+    private Clock _clock;
+    private TextObject _clockText;
     private TextObject _gameOverText;
-    int _score = 0;
+    private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+    private float _nightmareIncrement;
+    private List<Nightmare> _nightmares = new List<Nightmare>();
+    private NightmareMeter _nightmareMeter;
+    private int _numResidents;
+    private Orb _orb;
+    private Player _player;
     private PlayState _playState = PlayState.InPlay;
+    int _score = 0;
+    private TextObject _scoreText;
+
+    // statics
     static Random _random = new Random();
 
 
@@ -54,27 +58,37 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
+        _clock = new Clock(TimeSpan.FromMinutes(5), TimeSpan.FromHours(21), TimeSpan.FromHours(6));
     }
+
 
     public override void LoadContent()
     {
+        // audio
         _cannonRollFx = _am.LoadLoopedSoundFx("cannon-roll");
         _cannonRotateFx = _am.LoadLoopedSoundFx("cannon-rotate");
         _cityAmbience = _am.LoadMusic("city-ambience");
 
-
+        // basic graphics
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
+        int streetLevel = WindowHeight - _streetBase.Height;
+        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
+
+        // text 
+        _clockText = new TextObject(_am.LoadFont("Score"));
+        _clockText.CenterHorizontal(12);
+        _clockText.Colour = Color.DarkSlateGray;
         _gameOverText = new TextObject(_am.LoadFont("Title"), "Game Over!");
         _gameOverText.Colour = Color.Orange;
         _gameOverText.Scale = 3.0f;
         _gameOverText.Shadow = true;
         _gameOverText.CenterBoth();
-        int streetLevel = WindowHeight - _streetBase.Height;
-        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
         _scoreText = new TextObject(_am.LoadFont("Score"), "Score: 0");
         _scoreText.Position = new Vector2(40, 12);
         _scoreText.Colour = Color.DarkSlateGray;
+
+        // game objects
         _nightmareMeter = new NightmareMeter(_am);
 
         LoadBuildings(playArea, streetLevel);
@@ -190,11 +204,19 @@ public class Scene1 : GameScene
 
     public override void Update(GameTime gt)
     {
+        _clock.Update(gt);
+
         switch (_playState)
         {
             case PlayState.InPlay:
                 {
                     float delta = (float)gt.ElapsedGameTime.TotalSeconds;
+
+                    if (_clock.Finished)
+                    {
+                        _gameOverText.Text = "Level Complete!";
+                        _playState = PlayState.Sunrise;
+                    }
                     _newDreamerTimer -= delta;
                     if (_newDreamerTimer < 0)
                     {
@@ -216,21 +238,31 @@ public class Scene1 : GameScene
                         _playState = PlayState.GameOver;
                     }
 
+                    _clockText.Text = _clock.GameTime.ToString(@"hh\:mm");
+                    _clockText.Update(gt);
                     _player.Update(gt);
                     _orb.Update(gt, _player.CannonData);
+                    _scoreText.Update(gt);
+
                     HandleInput(gt);
                     
                     break;
                 }
 
             case PlayState.GameOver:
+                {
+                    _gameOverText.Update(gt);
+                    break;
+                }
             case PlayState.Sunrise:
+                {
+                    _gameOverText.Update(gt);
+                    break;
+                }
             default:
                 break;
         }
 
-        _scoreText.Update(gt);
-        _gameOverText.Update(gt);
 
         base.Update(gt);
     }
@@ -278,6 +310,7 @@ public class Scene1 : GameScene
         sb.Draw(_background, Vector2.Zero, Color.White);
         DrawStreetBase(sb);
         _scoreText.Draw(sb);
+        _clockText.Draw(sb);
 
         foreach (Building building in _buildings)
         {
@@ -288,7 +321,7 @@ public class Scene1 : GameScene
         _orb.Draw(sb);
         _player.Draw(sb);
 
-        if (_playState == PlayState.GameOver)
+        if (_playState == PlayState.GameOver || _playState == PlayState.Sunrise)
         {
             _gameOverText.Draw(sb);
         }
