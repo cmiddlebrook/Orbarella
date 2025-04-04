@@ -108,6 +108,7 @@ public class Building : GameObject
 
     public override void Draw(SpriteBatch sb)
     {
+        _building.Colour = this.Colour;
         _building.Draw(sb);
         foreach (Dreamer dreamer in _dreamers)
         {

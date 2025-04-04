@@ -34,6 +34,7 @@ public class Scene1 : GameScene
     private float _cityNightmareLevel;
     private Clock _clock;
     private TextObject _clockText;
+    private Color _darkTint = new Color(60, 60, 100);
     private TextObject _gameOverText;
     private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
     private float _nightmareIncrement;
@@ -58,7 +59,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(5), TimeSpan.FromHours(21), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(5), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -78,7 +79,6 @@ public class Scene1 : GameScene
         // text 
         _clockText = new TextObject(_am.LoadFont("Score"));
         _clockText.CenterHorizontal(12);
-        _clockText.Colour = Color.DarkSlateGray;
         _gameOverText = new TextObject(_am.LoadFont("Title"), "Game Over!");
         _gameOverText.Colour = Color.Orange;
         _gameOverText.Scale = 3.0f;
@@ -86,7 +86,6 @@ public class Scene1 : GameScene
         _gameOverText.CenterBoth();
         _scoreText = new TextObject(_am.LoadFont("Score"), "Score: 0");
         _scoreText.Position = new Vector2(40, 12);
-        _scoreText.Colour = Color.DarkSlateGray;
 
         // game objects
         _nightmareMeter = new NightmareMeter(_am);
@@ -307,13 +306,17 @@ public class Scene1 : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
-        sb.Draw(_background, Vector2.Zero, Color.White);
-        DrawStreetBase(sb);
+        var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
+
+        sb.Draw(_background, Vector2.Zero, darkToLightTint);
+        DrawStreetBase(sb, darkToLightTint);
+
         _scoreText.Draw(sb);
         _clockText.Draw(sb);
 
         foreach (Building building in _buildings)
         {
+            building.Colour = darkToLightTint;
             building.Draw(sb);
         }
         _nightmareMeter.Draw(sb);
@@ -327,12 +330,12 @@ public class Scene1 : GameScene
         }
     }
 
-    private void DrawStreetBase(SpriteBatch sb)
+    private void DrawStreetBase(SpriteBatch sb, Color timeTint)
     {
         int y = _background.Height - _streetBase.Height;
         for (int x = 0; x < WindowWidth; x += _streetBase.Width)
         {
-            sb.Draw(_streetBase, new Vector2(x, y), null, Color.White, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
+            sb.Draw(_streetBase, new Vector2(x, y), null, timeTint, 0f, Vector2.Zero, 1.0f, SpriteEffects.None, 0f);
         }
     }
 }
