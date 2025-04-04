@@ -18,6 +18,7 @@ public class Scene1 : GameScene
         InPlay,
         GameOver,
         Sunrise,
+        Paused,
     }
 
     private const float NEW_NIGHTMARE_SPAWN = 2.2f;
@@ -59,7 +60,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(5), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(0.15), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -141,62 +142,75 @@ public class Scene1 : GameScene
 
     public override void HandleInput(GameTime gt)
     {
-        if (_ih.KeyPressed(Keys.Down))
+        if (_playState != PlayState.Paused)
         {
-            _orb.SelectNextColour();
-        }
-        else if (_ih.KeyPressed(Keys.Up))
-        {
-            _orb.SelectPreviousColour();
-        }
-        else if (_ih.KeyDown(Keys.A))
-        {
-            _player.MoveLeft();
-        }
-        else if (_ih.KeyDown(Keys.D))
-        {
-            _player.MoveRight();
-        }
-        else if (_ih.StartKeyPress(Keys.Space))
-        {
-            _orb.StartCharging();
-        }
-        else if (_ih.KeyReleased(Keys.Space))
-        {
-            _orb.Launch();
-        }
+            if (_ih.KeyPressed(Keys.Down))
+            {
+                _orb.SelectNextColour();
+            }
+            else if (_ih.KeyPressed(Keys.Up))
+            {
+                _orb.SelectPreviousColour();
+            }
+            else if (_ih.KeyDown(Keys.A))
+            {
+                _player.MoveLeft();
+            }
+            else if (_ih.KeyDown(Keys.D))
+            {
+                _player.MoveRight();
+            }
+            else if (_ih.StartKeyPress(Keys.Space))
+            {
+                _orb.StartCharging();
+            }
+            else if (_ih.KeyReleased(Keys.Space))
+            {
+                _orb.Launch();
+            }
 
-        if (_ih.StartKeyPress(Keys.A) || _ih.StartKeyPress(Keys.D))
-        {
-            _cannonRollFx.Play();
-        }
-        else if (_ih.KeyUp(Keys.A) && _ih.KeyUp(Keys.D))
-        {
-            _cannonRollFx.Stop();
-        }
+            if (_ih.StartKeyPress(Keys.A) || _ih.StartKeyPress(Keys.D))
+            {
+                _cannonRollFx.Play();
+            }
+            else if (_ih.KeyUp(Keys.A) && _ih.KeyUp(Keys.D))
+            {
+                _cannonRollFx.Stop();
+            }
 
-        if (_ih.KeyDown(Keys.E))
-        {
-            _player.RotateBarrelRight();
-        }
-        else if (_ih.KeyDown(Keys.Q))
-        {
-            _player.RotateBarrelLeft();
-        }
+            if (_ih.KeyDown(Keys.E))
+            {
+                _player.RotateBarrelRight();
+            }
+            else if (_ih.KeyDown(Keys.Q))
+            {
+                _player.RotateBarrelLeft();
+            }
 
-        if (_ih.StartKeyPress(Keys.E) || _ih.StartKeyPress(Keys.Q))
-        {
-            _cannonRotateFx.Play();
+            if (_ih.StartKeyPress(Keys.E) || _ih.StartKeyPress(Keys.Q))
+            {
+                _cannonRotateFx.Play();
+            }
+            else if (_ih.KeyUp(Keys.E) && _ih.KeyUp(Keys.Q))
+            {
+                _cannonRotateFx.Stop();
+            }
         }
-        else if (_ih.KeyUp(Keys.E) && _ih.KeyUp(Keys.Q))
-        {
-            _cannonRotateFx.Stop();
-        }
-
 
         if (_ih.KeyPressed(Keys.P))
         {
-            //_state = GameState.Paused;
+            if (_playState == PlayState.Paused)
+            {
+                MediaPlayer.Resume();
+                _clock.Paused = false;
+                _playState = PlayState.InPlay;
+            }
+            else
+            {
+                MediaPlayer.Pause();
+                _clock.Paused = true;
+                _playState = PlayState.Paused;
+            }
         }
 
     }
@@ -242,8 +256,6 @@ public class Scene1 : GameScene
                     _player.Update(gt);
                     _orb.Update(gt, _player.CannonData);
                     _scoreText.Update(gt);
-
-                    HandleInput(gt);
                     
                     break;
                 }
@@ -258,10 +270,12 @@ public class Scene1 : GameScene
                     _gameOverText.Update(gt);
                     break;
                 }
+            case PlayState.Paused:
             default:
                 break;
         }
 
+        HandleInput(gt);
 
         base.Update(gt);
     }
