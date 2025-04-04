@@ -16,11 +16,11 @@ public class Scene1 : GameScene
     private enum PlayState
     {
         InPlay,
-        GameLost,
+        GameOver,
         Sunrise,
     }
 
-    private const float NEW_NIGHTMARE_SPAWN = 2.2f;
+    private const float NEW_NIGHTMARE_SPAWN = 0.2f;
     private const float CITY_NIGHTMARE_RATE = 1.5f;
 
     private SoundEffectInstance _cannonRollFx;
@@ -40,7 +40,7 @@ public class Scene1 : GameScene
     private float _nightmareIncrement;
     private float _cityNightmareLevel;
     private TextObject _scoreText;
-    private SpriteFont _gameOverText;
+    private TextObject _gameOverText;
     int _score = 0;
     private PlayState _playState = PlayState.InPlay;
     static Random _random = new Random();
@@ -65,10 +65,15 @@ public class Scene1 : GameScene
 
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
-        _gameOverText = _am.LoadFont("Title");
+        _gameOverText = new TextObject(_am.LoadFont("Title"), "Game Over!");
+        _gameOverText.Colour = Color.Orange;
+        _gameOverText.Scale = 3.0f;
+        _gameOverText.Shadow = true;
+        _gameOverText.CenterBoth();
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
-        _scoreText = new TextObject(_am.LoadFont("Score"), "", new Vector2(40, 12));
+        _scoreText = new TextObject(_am.LoadFont("Score"), "Score: 0");
+        _scoreText.Position = new Vector2(40, 12);
         _scoreText.Colour = Color.DarkSlateGray;
         _nightmareMeter = new NightmareMeter(_am);
 
@@ -208,7 +213,7 @@ public class Scene1 : GameScene
                     _nightmareMeter.Update(gt);
                     if (_nightmareMeter.IsFull)
                     {
-                        _playState = PlayState.GameLost;
+                        _playState = PlayState.GameOver;
                     }
 
                     _player.Update(gt);
@@ -218,14 +223,16 @@ public class Scene1 : GameScene
                     break;
                 }
 
-            case PlayState.GameLost:
+            case PlayState.GameOver:
             case PlayState.Sunrise:
             default:
                 break;
         }
 
-        base.Update(gt);
+        _scoreText.Update(gt);
+        _gameOverText.Update(gt);
 
+        base.Update(gt);
     }
 
     private void StartNightmare()
@@ -259,6 +266,7 @@ public class Scene1 : GameScene
                 {
                     _orb.Reload();
                     _score += isCorrectColour ? 100 : 10;
+                    _scoreText.Text = "Score: " + _score.ToString();
                 }
             }
         }
@@ -268,23 +276,21 @@ public class Scene1 : GameScene
     public override void Draw(SpriteBatch sb)
     {
         sb.Draw(_background, Vector2.Zero, Color.White);
-
         DrawStreetBase(sb);
-        _scoreText.DrawText(sb, "Score: " + _score.ToString());
+        _scoreText.Draw(sb);
+
         foreach (Building building in _buildings)
         {
             building.Draw(sb);
         }
         _nightmareMeter.Draw(sb);
+
         _orb.Draw(sb);
         _player.Draw(sb);
 
-        if (_playState == PlayState.GameLost)
+        if (_playState == PlayState.GameOver)
         {
-            var position = new Vector2(200, 150);
-            sb.DrawString(_gameOverText, "Game Over!", position, Color.Black, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0);
-            position -= new Vector2(5, 5);
-            sb.DrawString(_gameOverText, "Game Over!", position, Color.Orange, 0f, Vector2.Zero, 3f, SpriteEffects.None, 0);
+            _gameOverText.Draw(sb);
         }
     }
 
