@@ -17,20 +17,21 @@ public class Scene1 : GameScene
     private enum PlayState
     {
         InPlay,
-        GameOver,
-        Sunrise,
+        LevelCompleted,
+        GameWon,
+        GameLost,
         Paused,
     }
 
 
     // sound
-    private SoundEffectInstance _cannonRollFx;
-    private SoundEffectInstance _cannonRotateFx;
     private Song _cityAmbience;
 
     // graphics
     private Texture2D _background;
     private Texture2D _streetBase;
+    Rectangle _playArea;
+    int _streetLevel;
 
     // systems
     private HUD _hud;
@@ -45,7 +46,7 @@ public class Scene1 : GameScene
     // gameplay
     private Clock _clock;
     private Color _darkTint = new Color(60, 60, 100);
-    private int _levelID = 3;
+    private int _levelID = 1;
     private Orb _orb;
     private Player _player;
     private PlayState _playState = PlayState.InPlay;
@@ -63,39 +64,26 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(6), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(0.3), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
     public override void LoadContent()
     {
-        // audio
-        _cannonRollFx = _am.LoadLoopedSoundFx("cannon-roll");
-        _cannonRotateFx = _am.LoadLoopedSoundFx("cannon-rotate");
         _cityAmbience = _am.LoadMusic("city-ambience");
 
-        // basic graphics
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
-        int streetLevel = WindowHeight - _streetBase.Height;
-        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight); // window size set from background, so load that first!
+        _streetLevel = WindowHeight - _streetBase.Height;
+        _playArea = new Rectangle(0, 0, WindowWidth, WindowHeight); // window size set from background, so load that first!
+
+        // keep these loads positioned here!
+        LoadData();
+        LoadNextLevel();
 
         _hud = new HUD(_am, _clock);
-
-        // game objects
-        LoadData();
-        LoadLevel(0, playArea, streetLevel);
-
-        Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
-        _player = new Player(   _am.LoadTexture("wizard"),
-                                _am.LoadTexture("CannonBase"),
-                                cannonBarrel, 
-                                streetLevel + 20,
-                                WindowWidth);
-        _player._boundsTest = _am.LoadTexture("bounds-test");
-
-        _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmareList);
-
+        _player = new Player(_am, _streetLevel + 20, WindowWidth);
+        _orb = new Orb(_am, new Vector2(64, -7), _playArea, _nightmareList);
     }
 
     private void LoadData()
@@ -109,18 +97,21 @@ public class Scene1 : GameScene
         _levelList = JsonSerializer.Deserialize<List<LevelData>>(File.ReadAllText("Data/levels.json")).ToList();
     }
 
-    private void LoadLevel(int id, Rectangle playArea, int streetLevel)
+    private void LoadNextLevel()
     {
         var level = _levelList.Find(l => l.ID == _levelID);
-        int rightEdge = playArea.Width;
+        int rightEdge = _playArea.Width;
+        _buildingList.Clear();
         foreach (string houseName in level.Buildings)
         {
             var buildingData = _buildingDict[houseName];
-            var building = new Building(_am, buildingData, rightEdge, streetLevel, _nightmareList);
+            var building = new Building(_am, buildingData, rightEdge, _streetLevel, _nightmareList);
             _buildingList.Add(building);
             rightEdge = building.Bounds.Left;
         }
         _nightmareSystem.LoadLevel(_buildingList, level.NightmareSpawnRate, level.MaxNightmareFactor);
+        _clock.Reset();
+        _levelID++;
     }
 
 
@@ -160,13 +151,13 @@ public class Scene1 : GameScene
                 _orb.Launch();
             }
 
-            if (_ih.StartKeyPress(Keys.A) || _ih.StartKeyPress(Keys.D))
+            if (_playState == PlayState.LevelCompleted && _ih.KeyPressed(Keys.Enter))
             {
-                _cannonRollFx.Play();
-            }
-            else if (_ih.KeyUp(Keys.A) && _ih.KeyUp(Keys.D))
-            {
-                _cannonRollFx.Stop();
+                LoadNextLevel();
+                _orb.Reload();
+                _hud.Play();
+                _playState = PlayState.InPlay;
+
             }
 
             if (_ih.KeyDown(Keys.E))
@@ -178,14 +169,6 @@ public class Scene1 : GameScene
                 _player.RotateBarrelLeft();
             }
 
-            if (_ih.StartKeyPress(Keys.E) || _ih.StartKeyPress(Keys.Q))
-            {
-                _cannonRotateFx.Play();
-            }
-            else if (_ih.KeyUp(Keys.E) && _ih.KeyUp(Keys.Q))
-            {
-                _cannonRotateFx.Stop();
-            }
         }
 
         if (_ih.KeyPressed(Keys.P))
@@ -219,7 +202,7 @@ public class Scene1 : GameScene
                     if (_clock.Finished)
                     {
                         _hud.WinLevel();
-                        _playState = PlayState.Sunrise;
+                        _playState = PlayState.LevelCompleted;
                     }
 
                     _nightmareSystem.Update(gt);
@@ -229,8 +212,8 @@ public class Scene1 : GameScene
 
                     if (_nightmareSystem.CityLevel >= 1.0f)
                     {
-                        _hud.LoseLevel();
-                        _playState = PlayState.GameOver;
+                        _hud.LoseGame();
+                        _playState = PlayState.GameLost;
                     }
 
                     _player.Update(gt);
@@ -239,8 +222,21 @@ public class Scene1 : GameScene
                     break;
                 }
 
-            case PlayState.GameOver:
-            case PlayState.Sunrise:
+            case PlayState.GameLost:
+            case PlayState.LevelCompleted:
+                {
+                    _clock.Paused = true;
+                    if (_levelID > _levelList.Count)
+                    {
+                        _playState = PlayState.GameWon;
+                    }
+                    break;
+                }
+            case PlayState.GameWon:
+                {
+                    _hud.WinGame();
+                    break;
+                }
             case PlayState.Paused:
             default:
                 break;
@@ -278,8 +274,8 @@ public class Scene1 : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
-        //var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
-        var darkToLightTint = Color.Lerp(Color.LightGray, Color.White, _clock.Progress);
+        var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
+        //var darkToLightTint = Color.Lerp(Color.LightGray, Color.White, _clock.Progress); // for testing!
 
         sb.Draw(_background, Vector2.Zero, darkToLightTint);
         DrawStreetBase(sb, darkToLightTint);

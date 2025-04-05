@@ -1,5 +1,6 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Diagnostics;
@@ -22,6 +23,9 @@ public class Player : GameObject
         Stopped
     }
 
+    private SoundEffectInstance _cannonRollFx;
+    private SoundEffectInstance _cannonRotateFx;
+
     private SpriteObject _wizard;
     private SpriteObject _barrel;
     private SpriteObject _base;
@@ -42,18 +46,21 @@ public class Player : GameObject
 
     public CannonData CannonData => new CannonData(_barrel.Position, Angle);
 
-    public Player(Texture2D wizard, Texture2D cannonBase, Texture2D cannonBarrel, int streetLevel, int rightEdge)
+    public Player(AssetManager am, int streetLevel, int rightEdge)
     {
-        // the position offsets and the origin of the cannon barrel are hardcoded
-        // to the specific sprites used for the cannon. If I later change the sprites, 
-        // I'll need to recalculate the values used here
+        _cannonRollFx = am.LoadLoopedSoundFx("cannon-roll");
+        _cannonRotateFx = am.LoadLoopedSoundFx("cannon-rotate");
+
         _rightEdge = rightEdge;
+        var wizard = am.LoadTexture("wizard");
         _wizardPosition = new Vector2(80, streetLevel - wizard.Height);
         _wizard = new SpriteObject(wizard, _wizardPosition, Vector2.Zero, 1.0f);
         var barrelOrigin = new Vector2(20, 35);
+        var cannonBarrel = am.LoadTexture("CannonBarrel");
         _barrelPositionOffset = new Vector2(100, wizard.Height - cannonBarrel.Height + barrelOrigin.Y);
         _barrel = new SpriteObject(cannonBarrel, _wizardPosition + _barrelPositionOffset, Vector2.Zero, 1.0f);
         _barrel.Origin = barrelOrigin;
+        var cannonBase = am.LoadTexture("CannonBase");
         _basePositionOffset = new Vector2(68, wizard.Height - cannonBase.Height);
         _base = new SpriteObject(cannonBase, _wizardPosition + _basePositionOffset, Vector2.Zero, 1.0f);
         Angle = 90f;
@@ -68,6 +75,11 @@ public class Player : GameObject
 
     public override void Update(GameTime gt)
     {
+        if (_cannonRollFx.State == SoundState.Stopped && (_moveState == MoveState.MovingLeft || _moveState == MoveState.MovingRight))
+        {
+            _cannonRollFx.Play();
+        }
+
         switch (_moveState)
         {
             case MoveState.MovingLeft:
@@ -84,13 +96,20 @@ public class Player : GameObject
             }
 
             case MoveState.Stopped:
+                {
+                    _cannonRollFx.Stop();
+                    break;
+                }
             default:
                 {
                     break;
                 }
         }
 
-
+        if (_cannonRotateFx.State == SoundState.Stopped && (_barrelState == BarrelState.RotatingLeft || _barrelState == BarrelState.RotatingRight))
+        {
+            _cannonRotateFx.Play();
+        }
 
         switch (_barrelState)
         {
@@ -109,6 +128,7 @@ public class Player : GameObject
             default:
             case BarrelState.Stopped:
                 {
+                    _cannonRotateFx.Stop();
                     break;
                 }
 
@@ -118,8 +138,6 @@ public class Player : GameObject
         _wizard.Position = _wizardPosition;
         _barrel.Position = _wizardPosition + _barrelPositionOffset;
         _base.Position = _wizardPosition + _basePositionOffset;
-        //_bounds.X = _wizard.Bounds.X;
-        //_bounds.Y = _wizard.Bounds.Y;
         
         _moveState = MoveState.Stopped;
         _barrelState = BarrelState.Stopped;
