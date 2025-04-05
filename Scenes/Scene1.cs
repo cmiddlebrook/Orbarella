@@ -21,8 +21,8 @@ public class Scene1 : GameScene
         Paused,
     }
 
-    private const float NEW_NIGHTMARE_SPAWN = 2.2f;
-    private const float CITY_NIGHTMARE_RATE = 1.5f;
+
+    private NightmareSystem _nightmareSystem;
 
     private SoundEffectInstance _cannonRollFx;
     private SoundEffectInstance _cannonRotateFx;
@@ -32,15 +32,12 @@ public class Scene1 : GameScene
     private Texture2D _streetBase;
 
     private List<Building> _buildings = new List<Building>();
-    private float _cityNightmareLevel;
     private Clock _clock;
     private TextObject _clockText;
     private Color _darkTint = new Color(60, 60, 100);
     private TextObject _gameOverText;
-    private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
-    private float _nightmareIncrement;
     private List<Nightmare> _nightmares = new List<Nightmare>();
-    private NightmareMeter _nightmareMeter;
+    
     private int _numResidents;
     private Orb _orb;
     private Player _player;
@@ -60,7 +57,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(0.15), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(6), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -89,9 +86,9 @@ public class Scene1 : GameScene
         _scoreText.Position = new Vector2(40, 12);
 
         // game objects
-        _nightmareMeter = new NightmareMeter(_am);
-
         LoadBuildings(playArea, streetLevel);
+        _nightmareSystem = new NightmareSystem(_am, _buildings);
+
 
         Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
         _player = new Player(   _am.LoadTexture("wizard"),
@@ -104,7 +101,6 @@ public class Scene1 : GameScene
         LoadNightmares();
         _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
 
-        _nightmareIncrement = _nightmareMeter.NumTicks / _numResidents * CITY_NIGHTMARE_RATE;
     }
 
     private void LoadBuildings(Rectangle playArea, int streetLevel)
@@ -135,7 +131,7 @@ public class Scene1 : GameScene
 
     public override void Enter()
     {
-        StartNightmare();
+        _nightmareSystem.StartNightmare();
         MediaPlayer.IsRepeating = true;
         MediaPlayer.Play(_cityAmbience);
     }
@@ -230,23 +226,13 @@ public class Scene1 : GameScene
                         _gameOverText.Text = "Level Complete!";
                         _playState = PlayState.Sunrise;
                     }
-                    _newDreamerTimer -= delta;
-                    if (_newDreamerTimer < 0)
-                    {
-                        StartNightmare();
-                    }
+
+                    _nightmareSystem.Update(gt);
 
                     HandleCollisions();
 
-                    _cityNightmareLevel = 0f;
-                    foreach (Building building in _buildings)
-                    {
-                        building.Update(gt);
-                        _cityNightmareLevel += (building.NumDreaming * _nightmareIncrement);
-                    }
-                    _nightmareMeter.SetLevel(_cityNightmareLevel);
-                    _nightmareMeter.Update(gt);
-                    if (_nightmareMeter.IsFull)
+
+                    if (_nightmareSystem.ThresholdReached)
                     {
                         _playState = PlayState.GameOver;
                     }
@@ -280,23 +266,7 @@ public class Scene1 : GameScene
         base.Update(gt);
     }
 
-    private void StartNightmare()
-    {
-        int numBuildingsTested = 0;
-        int numMaxBuildings = _buildings.Count - 1; // -1 to account for the blank house on every level
-        bool newNightmare = false;
-        while (!newNightmare && numBuildingsTested < numMaxBuildings)
-        {
-            var buildingIdx = _random.Next(numMaxBuildings); 
-            newNightmare = _buildings[buildingIdx].StartNightmare();
-            if (newNightmare)
-            {
-                _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
-                return;
-            }
-            numBuildingsTested++;
-        }
-    }
+
 
     private void HandleCollisions()
     {
@@ -333,7 +303,7 @@ public class Scene1 : GameScene
             building.Colour = darkToLightTint;
             building.Draw(sb);
         }
-        _nightmareMeter.Draw(sb);
+        _nightmareSystem.Draw(sb);
 
         _orb.Draw(sb);
         _player.Draw(sb);
