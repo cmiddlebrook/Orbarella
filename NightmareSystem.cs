@@ -1,6 +1,5 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,25 +8,24 @@ namespace Orbarella;
 
 public class NightmareSystem
 {
-    private const float CITY_NIGHTMARE_RATE = 1.5f;
+    // these values will later be refactored to be loaded in from a level definition
     private const float NEW_NIGHTMARE_SPAWN = 2.2f;
+    private const float MAX_NIGHTMARE_FACTOR = 0.8f;
 
     private List<Building> _buildings;
+    private float _maxCityNightmareLevel;
     private float _cityNightmareLevel;
     private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
-    private NightmareMeter _nightmareMeter;
-    private float _nightmareIncrement;
 
     static Random _random = new Random();
 
-    public bool ThresholdReached => _nightmareMeter.IsFull;
+    public float CityLevel => _cityNightmareLevel / _maxCityNightmareLevel;
 
-    public NightmareSystem(AssetManager am, List<Building> buildings)
+    public NightmareSystem(List<Building> buildings)
     {
         _buildings = buildings;
-        _nightmareMeter = new NightmareMeter(am);
         int numResidents = buildings.Sum(b => b.NumResidents);
-        _nightmareIncrement = _nightmareMeter.NumTicks / numResidents * CITY_NIGHTMARE_RATE;
+        _maxCityNightmareLevel = numResidents * MAX_NIGHTMARE_FACTOR;
     }
 
 
@@ -45,11 +43,8 @@ public class NightmareSystem
         foreach (Building building in _buildings)
         {
             building.Update(gt);
-            _cityNightmareLevel += (building.NumDreaming * _nightmareIncrement);
+            _cityNightmareLevel += building.NumDreaming;
         }
-        _nightmareMeter.SetLevel(_cityNightmareLevel);
-        _nightmareMeter.Update(gt);
-
     }
 
     public void StartNightmare()
@@ -70,8 +65,4 @@ public class NightmareSystem
         }
     }
 
-    public void Draw(SpriteBatch sb)
-    {
-        _nightmareMeter.Draw(sb);
-    }
 }

@@ -81,7 +81,7 @@ public class Scene1 : GameScene
 
         // game objects
         LoadBuildings(playArea, streetLevel);
-        _nightmareSystem = new NightmareSystem(_am, _buildings);
+        _nightmareSystem = new NightmareSystem(_buildings);
 
 
         Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
@@ -226,7 +226,7 @@ public class Scene1 : GameScene
                     HandleCollisions();
 
 
-                    if (_nightmareSystem.ThresholdReached)
+                    if (_nightmareSystem.CityLevel >= 1.0f)
                     {
                         _hud.LoseLevel();
                         _playState = PlayState.GameOver;
@@ -245,6 +245,7 @@ public class Scene1 : GameScene
                 break;
         }
 
+        _hud.NightmareLevel = _nightmareSystem.CityLevel;
         _hud.Update(gt);
 
         HandleInput(gt);
@@ -281,15 +282,13 @@ public class Scene1 : GameScene
         sb.Draw(_background, Vector2.Zero, darkToLightTint);
         DrawStreetBase(sb, darkToLightTint);
 
-        _hud.Draw(sb);
-
         foreach (Building building in _buildings)
         {
             building.Colour = darkToLightTint;
             building.Draw(sb);
         }
-        _nightmareSystem.Draw(sb);
 
+        _hud.Draw(sb);
         _orb.Draw(sb);
         _player.Draw(sb);
 

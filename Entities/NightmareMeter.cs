@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using System;
 
 namespace Orbarella;
-public class NightmareMeter
+public class NightmareMeter : GameObject
 {
     private const int MAX_TICKS = 24;
     private SpriteObject _container;
@@ -13,10 +13,6 @@ public class NightmareMeter
     private Color[] _tickColours;
     private int _numTicks;
 
-    public int NumTicks => MAX_TICKS;
-
-    public bool IsFull => _numTicks == MAX_TICKS;
-
 
     public NightmareMeter(AssetManager am)
     {
@@ -24,7 +20,7 @@ public class NightmareMeter
         _tick = am.LoadTexture("mightmare-meter-tick");
         SetupMeter();
     }
-    private void SetupMeter()
+    protected void SetupMeter()
     {
         // positions are relative to the container
         _tickPositions = new Vector2[MAX_TICKS];
@@ -47,18 +43,30 @@ public class NightmareMeter
         }
     }
 
+
+    /// <summary>
+    /// Sets the meter's progress level based on a normalized value.
+    /// The level should be a float between 0 and 1, where 0 represents no progress
+    /// and 1 represents full progress. The number of ticks will be adjusted accordingly,
+    /// </summary>
+    /// <param name="level">A float between 0 and 1 representing the progress level.</param>
     public void SetLevel(float level)
     {
-        _numTicks = Math.Min((int)Math.Floor(level), MAX_TICKS);
+        _numTicks = Math.Min((int)(level * MAX_TICKS), MAX_TICKS);
     }
 
+    protected override void UpdateBounds()
+    {
+        _bounds = _container.Bounds;
+    }
 
-    public void Update(GameTime gt)
+    public override void Update(GameTime gt)
     { 
 
+        base.Update(gt);
     }
 
-    public void Draw(SpriteBatch sb)
+    public override void Draw(SpriteBatch sb)
     {
         _container.Draw(sb);
         for (int i = 0; i < _numTicks; i++)

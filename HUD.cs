@@ -16,18 +16,24 @@ public class HUD
     private TextObject _clockText;
     private TextObject _endLevelText;
     private EndLevelState _endLevelState = EndLevelState.None;
+    private NightmareMeter _nightmareMeter;
     private int _score = 0;
     private TextObject _scoreText;
 
     public int Score
     {
-        //get => _score;
         set
         {
             _score = value;
             _scoreText.Text = "Score: " + _score.ToString();
         }
     }
+
+    public float NightmareLevel
+    {
+        set => _nightmareMeter.SetLevel(value);
+    }
+
     public HUD(AssetManager am, Clock clock)
     {
         _clock = clock;
@@ -39,6 +45,8 @@ public class HUD
         _endLevelText.Scale = 3.0f;
         _endLevelText.Shadow = true;
         _endLevelText.CenterBoth();
+
+        _nightmareMeter = new NightmareMeter(am);
 
         _scoreText = new TextObject(am.LoadFont("Score"), "Score: 0");
         _scoreText.Position = new Vector2(40, 12);
@@ -73,6 +81,7 @@ public class HUD
     {
         _clockText.Draw(sb);
         _scoreText.Draw(sb);
+        _nightmareMeter.Draw(sb);
 
         if (_endLevelState != EndLevelState.None)
         {
