@@ -32,21 +32,19 @@ public class Building : GameObject
         var buildingTx = am.LoadTexture(data.Name);
         var position = new Vector2(rightEdge - buildingTx.Width - 10, streetLevel - buildingTx.Height);
         _building = new SpriteObject(buildingTx, position, Vector2.Zero, 1.0f);
-        CreateWindows(am.LoadTexture("window"), data.Windows);
+        CreateWindows(am, data.Windows);
         UpdateBounds();
         //_drawBounds = true;
     }
 
-    private void CreateWindows(Texture2D windowTX, List<WindowPosition> windows)
+    private void CreateWindows(AssetManager am, List<WindowPosition> windows)
     {
         _dreamers = new List<Dreamer>();
         int numWindows = windows.Count;
         foreach (WindowPosition wp in windows)
         {
             var position = new Vector2(_building.Position.X + wp.X, _building.Position.Y + wp.Y);
-            var window = new SpriteObject(windowTX, position, Vector2.Zero, 1.0f);
-
-            var dreamer = new Dreamer(window, _nightmares, numWindows);
+            var dreamer = new Dreamer(am, position, _nightmares, numWindows);
             _dreamers.Add(dreamer);
         }
         _numResidents = _dreamers.Count;
@@ -59,8 +57,6 @@ public class Building : GameObject
 
     public override void Update(GameTime gt)
     {
-        float delta = (float)gt.ElapsedGameTime.TotalSeconds;
-
         _building.Update(gt);
         foreach (Dreamer dreamer in _dreamers)
         {
@@ -84,10 +80,6 @@ public class Building : GameObject
         return false;
     }
 
-    public void StopNightmare(Dreamer dreamer, bool isCorrectColour)
-    {
-        dreamer.StopNightmare(true, isCorrectColour);
-    }
 
     public (bool isCollision, bool isCorrectColour) HandleCollisions(Orb orb)
     {
@@ -98,8 +90,7 @@ public class Building : GameObject
             if (dreamer.IsDreaming && orb.Bounds.Intersects(dreamer.Bounds))
             {
                 isCollision = true;
-                isCorrectColour = (dreamer.IsColourMatch(orb.Colour));
-                StopNightmare (dreamer, isCorrectColour);
+                dreamer.StopNightmare(true, orb.Colour);
                 break;
             }
         }
