@@ -16,6 +16,7 @@ public class Scene1 : GameScene
     {
         InPlay,
         LevelCompleted,
+        StartNewLevel,
         GameWon,
         GameLost,
         Paused,
@@ -62,7 +63,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(1), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(0.2), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -77,7 +78,7 @@ public class Scene1 : GameScene
 
         // keep these loads positioned here!
         LoadData();
-        LoadNextLevel();
+        LoadLevel();
 
         _hud = new HUD(_am, _clock);
         _player = new Player(_am, _streetLevel + 20, WindowWidth);
@@ -95,7 +96,7 @@ public class Scene1 : GameScene
         _levelList = JsonSerializer.Deserialize<List<LevelData>>(File.ReadAllText("Data/levels.json")).ToList();
     }
 
-    private void LoadNextLevel()
+    private void LoadLevel()
     {
         var level = _levelList.Find(l => l.ID == _levelID);
         int rightEdge = _playArea.Width;
@@ -109,7 +110,6 @@ public class Scene1 : GameScene
         }
         _nightmareSystem.LoadLevel(_buildingList, level.NightmareSpawnRate, level.MaxNightmareFactor);
         _clock.Reset();
-        _levelID++;
     }
 
 
@@ -122,7 +122,7 @@ public class Scene1 : GameScene
 
     public override void HandleInput(GameTime gt)
     {
-        if (_playState != PlayState.Paused)
+        if (_playState == PlayState.InPlay)
         {
             if (_ih.KeyPressed(Keys.Down))
             {
@@ -149,15 +149,6 @@ public class Scene1 : GameScene
                 _orb.Launch();
             }
 
-            if (_playState == PlayState.LevelCompleted && _ih.KeyPressed(Keys.Enter))
-            {
-                LoadNextLevel();
-                _orb.Reload();
-                _hud.Play();
-                _playState = PlayState.InPlay;
-
-            }
-
             if (_ih.KeyDown(Keys.E))
             {
                 _player.RotateBarrelRight();
@@ -166,21 +157,24 @@ public class Scene1 : GameScene
             {
                 _player.RotateBarrelLeft();
             }
-
         }
+
+        if (_playState == PlayState.LevelCompleted && _ih.KeyPressed(Keys.Enter))
+        {
+            _playState = PlayState.StartNewLevel;
+        }
+
 
         if (_ih.KeyPressed(Keys.P))
         {
             if (_playState == PlayState.Paused)
             {
                 MediaPlayer.Resume();
-                _clock.Paused = false;
                 _playState = PlayState.InPlay;
             }
             else
             {
                 MediaPlayer.Pause();
-                _clock.Paused = true;
                 _playState = PlayState.Paused;
             }
         }
@@ -189,18 +183,22 @@ public class Scene1 : GameScene
 
     public override void Update(GameTime gt)
     {
+        if (_playState != PlayState.InPlay)
+        {
+            _clock.Paused = true;
+        }
         _clock.Update(gt);
 
         switch (_playState)
         {
             case PlayState.InPlay:
                 {
-                    float delta = (float)gt.ElapsedGameTime.TotalSeconds;
-
+                    _clock.Paused = false;
                     if (_clock.Finished)
                     {
-                        _hud.WinLevel();
-                        _playState = PlayState.LevelCompleted;
+                        _clock.Paused = true;
+                        _levelID++;
+                        _playState = (_levelID > _levelList.Count) ? PlayState.GameWon : PlayState.LevelCompleted;
                     }
 
                     _nightmareSystem.Update(gt);
@@ -209,7 +207,6 @@ public class Scene1 : GameScene
 
                     if (_nightmareSystem.CityLevel >= 1.0f)
                     {
-                        _hud.LoseGame();
                         _playState = PlayState.GameLost;
                     }
 
@@ -219,14 +216,23 @@ public class Scene1 : GameScene
                     break;
                 }
 
+            case PlayState.StartNewLevel:
+                {
+                    LoadLevel();
+                    _orb.Reload();
+                    _hud.Play();
+                    _playState = PlayState.InPlay;
+                    break;
+                }
+
             case PlayState.GameLost:
+                {
+                    _hud.LoseGame();
+                    break;
+                }
             case PlayState.LevelCompleted:
                 {
-                    _clock.Paused = true;
-                    if (_levelID > _levelList.Count)
-                    {
-                        _playState = PlayState.GameWon;
-                    }
+                    _hud.WinLevel();
                     break;
                 }
             case PlayState.GameWon:

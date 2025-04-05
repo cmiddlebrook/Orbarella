@@ -79,7 +79,8 @@ public class Orb : GameObject
         foreach (Nightmare nightmare in nightmares)
         {
             _orbColours.Add(nightmare.Colour);
-        }        
+        }
+        UpdateColour();
     }
 
     protected override void UpdateBounds()
@@ -198,16 +199,19 @@ public class Orb : GameObject
     public void SelectNextColour()
     {
         _currentColour = (_currentColour + 1) % _orbColours.Count;
-        _orb.Colour = _orbColours[_currentColour];
-        _colour = _orbColours[_currentColour];
+        UpdateColour();
     }
 
     public void SelectPreviousColour()
     {
         _currentColour = (_currentColour - 1 + _orbColours.Count) % _orbColours.Count;
+        UpdateColour();
+    }
+
+    private void UpdateColour()
+    {
         _orb.Colour = _orbColours[_currentColour];
         _colour = _orbColours[_currentColour];
-
     }
 
 }
