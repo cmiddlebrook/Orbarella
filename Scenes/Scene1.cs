@@ -22,28 +22,31 @@ public class Scene1 : GameScene
     }
 
 
-    private NightmareSystem _nightmareSystem;
-
+    // sound
     private SoundEffectInstance _cannonRollFx;
     private SoundEffectInstance _cannonRotateFx;
     private Song _cityAmbience;
 
+    // graphics
     private Texture2D _background;
     private Texture2D _streetBase;
 
+    // systems
+    private HUD _hud;
+    private NightmareSystem _nightmareSystem;
+
+    // data
     private List<Building> _buildings = new List<Building>();
-    private Clock _clock;
-    private TextObject _clockText;
-    private Color _darkTint = new Color(60, 60, 100);
-    private TextObject _gameOverText;
     private List<Nightmare> _nightmares = new List<Nightmare>();
-    
+
+    // gameplay
+    private Clock _clock;
+    private Color _darkTint = new Color(60, 60, 100);    
     private int _numResidents;
     private Orb _orb;
     private Player _player;
     private PlayState _playState = PlayState.InPlay;
     int _score = 0;
-    private TextObject _scoreText;
 
     // statics
     static Random _random = new Random();
@@ -74,16 +77,7 @@ public class Scene1 : GameScene
         int streetLevel = WindowHeight - _streetBase.Height;
         Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
 
-        // text 
-        _clockText = new TextObject(_am.LoadFont("Score"));
-        _clockText.CenterHorizontal(12);
-        _gameOverText = new TextObject(_am.LoadFont("Title"), "Game Over!");
-        _gameOverText.Colour = Color.Orange;
-        _gameOverText.Scale = 3.0f;
-        _gameOverText.Shadow = true;
-        _gameOverText.CenterBoth();
-        _scoreText = new TextObject(_am.LoadFont("Score"), "Score: 0");
-        _scoreText.Position = new Vector2(40, 12);
+        _hud = new HUD(_am, _clock);
 
         // game objects
         LoadBuildings(playArea, streetLevel);
@@ -223,7 +217,7 @@ public class Scene1 : GameScene
 
                     if (_clock.Finished)
                     {
-                        _gameOverText.Text = "Level Complete!";
+                        _hud.WinLevel();
                         _playState = PlayState.Sunrise;
                     }
 
@@ -234,32 +228,24 @@ public class Scene1 : GameScene
 
                     if (_nightmareSystem.ThresholdReached)
                     {
+                        _hud.LoseLevel();
                         _playState = PlayState.GameOver;
                     }
 
-                    _clockText.Text = _clock.GameTime.ToString(@"hh\:mm");
-                    _clockText.Update(gt);
                     _player.Update(gt);
                     _orb.Update(gt, _player.CannonData);
-                    _scoreText.Update(gt);
                     
                     break;
                 }
 
             case PlayState.GameOver:
-                {
-                    _gameOverText.Update(gt);
-                    break;
-                }
             case PlayState.Sunrise:
-                {
-                    _gameOverText.Update(gt);
-                    break;
-                }
             case PlayState.Paused:
             default:
                 break;
         }
+
+        _hud.Update(gt);
 
         HandleInput(gt);
 
@@ -281,7 +267,7 @@ public class Scene1 : GameScene
                 {
                     _orb.Reload();
                     _score += isCorrectColour ? 100 : 10;
-                    _scoreText.Text = "Score: " + _score.ToString();
+                    _hud.Score = _score;
                 }
             }
         }
@@ -295,8 +281,7 @@ public class Scene1 : GameScene
         sb.Draw(_background, Vector2.Zero, darkToLightTint);
         DrawStreetBase(sb, darkToLightTint);
 
-        _scoreText.Draw(sb);
-        _clockText.Draw(sb);
+        _hud.Draw(sb);
 
         foreach (Building building in _buildings)
         {
@@ -308,10 +293,6 @@ public class Scene1 : GameScene
         _orb.Draw(sb);
         _player.Draw(sb);
 
-        if (_playState == PlayState.GameOver || _playState == PlayState.Sunrise)
-        {
-            _gameOverText.Draw(sb);
-        }
     }
 
     private void DrawStreetBase(SpriteBatch sb, Color timeTint)
