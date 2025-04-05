@@ -7,7 +7,7 @@ using System.Collections.Generic;
 namespace Orbarella;
 public class Dreamer : GameObject
 {
-
+    private const int BASE_DREAM_DURATION = 10;
     private Color _defaultWindowColour = new Color(34, 46, 59);
     private SpriteObject _window;
     private SpriteObject _dream;
@@ -20,12 +20,12 @@ public class Dreamer : GameObject
 
     public bool IsDreaming => _isDreaming;
 
-    public Dreamer(SpriteObject window, List<Nightmare> nightmares)
+    public Dreamer(SpriteObject window, List<Nightmare> nightmares, int dreamDurationModifier)
     {
         _window = window;
         _window.Colour = _defaultWindowColour;
         _nightmares = nightmares;
-        _dreamDuration = _random.Next(20, 30);
+        _dreamDuration = _random.Next(1, 10) + BASE_DREAM_DURATION + (dreamDurationModifier * 1.2f);
         _dreamTimer = _dreamDuration;
         //_drawBounds = true;
     }

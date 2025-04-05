@@ -40,12 +40,13 @@ public class Building : GameObject
     private void CreateWindows(Texture2D windowTX, List<WindowPosition> windows)
     {
         _dreamers = new List<Dreamer>();
+        int numWindows = windows.Count;
         foreach (WindowPosition wp in windows)
         {
             var position = new Vector2(_building.Position.X + wp.X, _building.Position.Y + wp.Y);
             var window = new SpriteObject(windowTX, position, Vector2.Zero, 1.0f);
 
-            var dreamer = new Dreamer(window, _nightmares);
+            var dreamer = new Dreamer(window, _nightmares, numWindows);
             _dreamers.Add(dreamer);
         }
         _numResidents = _dreamers.Count;

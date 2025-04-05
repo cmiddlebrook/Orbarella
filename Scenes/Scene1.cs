@@ -45,7 +45,7 @@ public class Scene1 : GameScene
     // gameplay
     private Clock _clock;
     private Color _darkTint = new Color(60, 60, 100);
-    private int _levelID = 0;
+    private int _levelID = 3;
     private Orb _orb;
     private Player _player;
     private PlayState _playState = PlayState.InPlay;
