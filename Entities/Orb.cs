@@ -43,6 +43,7 @@ public class Orb : GameObject
 
     public OrbState State => _orbState;
 
+
     public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
         _chargeOrbFx = am.LoadLoopedSoundFx("charge-orb");
@@ -153,7 +154,6 @@ public class Orb : GameObject
 
     public override void Draw(SpriteBatch sb)
     {
-        _orb.Colour = _orbColours[_currentColour];
         _orb.Draw(sb);
 
         if (_orbState == OrbState.Charging)
@@ -198,11 +198,16 @@ public class Orb : GameObject
     public void SelectNextColour()
     {
         _currentColour = (_currentColour + 1) % _orbColours.Count;
+        _orb.Colour = _orbColours[_currentColour];
+        _colour = _orbColours[_currentColour];
     }
 
     public void SelectPreviousColour()
     {
         _currentColour = (_currentColour - 1 + _orbColours.Count) % _orbColours.Count;
+        _orb.Colour = _orbColours[_currentColour];
+        _colour = _orbColours[_currentColour];
+
     }
 
 }

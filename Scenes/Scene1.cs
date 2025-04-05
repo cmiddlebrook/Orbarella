@@ -1,6 +1,5 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
@@ -9,7 +8,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Linq;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Orbarella;
 public class Scene1 : GameScene
@@ -64,7 +62,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(0.3), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(1), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -208,7 +206,6 @@ public class Scene1 : GameScene
                     _nightmareSystem.Update(gt);
 
                     HandleCollisions();
-
 
                     if (_nightmareSystem.CityLevel >= 1.0f)
                     {
