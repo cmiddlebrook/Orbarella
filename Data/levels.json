@@ -1,0 +1,33 @@
+[
+  {
+    "ID": 0,
+    "Buildings": [ "house6", "house4", "house5", "house6", "blankhouse" ],
+    "NightmareSpawnRate": 1.6,
+    "MaxNightmareFactor": 0.7
+  },
+
+  {
+    "ID": 1,
+    "Buildings": [ "house3", "house1", "house2", "house3", "house1", "blankhouse" ],
+    "NightmareSpawnRate": 1.6,
+    "MaxNightmareFactor": 0.7
+  },
+
+  {
+    "ID": 2,
+    "Buildings": [ "house4", "house5", "house6", "blankhouse" ],
+    "NightmareSpawnRate": 1.4,
+    "MaxNightmareFactor": 0.6
+  },
+
+  {
+    "ID": 3,
+    "Buildings": [ "house7", "house8", "house7", "house9", "blankhouse" ],
+    "NightmareSpawnRate": 1.2,
+    "MaxNightmareFactor": 0.5
+  }
+]
+
+
+
+  

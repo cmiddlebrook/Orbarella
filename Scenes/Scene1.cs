@@ -8,7 +8,8 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Diagnostics;
+using System.Linq;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Orbarella;
 public class Scene1 : GameScene
@@ -33,16 +34,18 @@ public class Scene1 : GameScene
 
     // systems
     private HUD _hud;
-    private NightmareSystem _nightmareSystem;
+    private NightmareSystem _nightmareSystem = new NightmareSystem();
 
     // data
-    private List<Building> _buildings = new List<Building>();
-    private List<Nightmare> _nightmares = new List<Nightmare>();
+    private Dictionary<string, BuildingData> _buildingDict;
+    private List<Building> _buildingList = new List<Building>();
+    private List<Nightmare> _nightmareList = new List<Nightmare>();
+    private List<LevelData> _levelList = new List<LevelData>();
 
     // gameplay
     private Clock _clock;
-    private Color _darkTint = new Color(60, 60, 100);    
-    private int _numResidents;
+    private Color _darkTint = new Color(60, 60, 100);
+    private int _levelID = 0;
     private Orb _orb;
     private Player _player;
     private PlayState _playState = PlayState.InPlay;
@@ -75,14 +78,13 @@ public class Scene1 : GameScene
         _background = _am.LoadTexture("Scene1");
         _streetBase = _am.LoadTexture("street-base");
         int streetLevel = WindowHeight - _streetBase.Height;
-        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight);
+        Rectangle playArea = new Rectangle(0, 0, WindowWidth, WindowHeight); // window size set from background, so load that first!
 
         _hud = new HUD(_am, _clock);
 
         // game objects
-        LoadBuildings(playArea, streetLevel);
-        _nightmareSystem = new NightmareSystem(_buildings);
-
+        LoadData();
+        LoadLevel(0, playArea, streetLevel);
 
         Texture2D cannonBarrel = _am.LoadTexture("CannonBarrel");
         _player = new Player(   _am.LoadTexture("wizard"),
@@ -92,36 +94,35 @@ public class Scene1 : GameScene
                                 WindowWidth);
         _player._boundsTest = _am.LoadTexture("bounds-test");
 
-        LoadNightmares();
-        _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmares);
+        _orb = new Orb(_am, new Vector2(cannonBarrel.Width - 20, -7), playArea, _nightmareList);
 
     }
 
-    private void LoadBuildings(Rectangle playArea, int streetLevel)
+    private void LoadData()
     {
-        string json = File.ReadAllText("Data/buildings.json");
-        var buildings = JsonSerializer.Deserialize<List<BuildingData>>(json);
+        var nightmares = JsonSerializer.Deserialize<List<NightmareData>>(File.ReadAllText("Data/nightmares.json"));
+        _nightmareList = nightmares.Select(data => new Nightmare(_am, data)).ToList();
 
+        var buildingList = JsonSerializer.Deserialize<List<BuildingData>>(File.ReadAllText("Data/buildings.json"));
+        _buildingDict = buildingList.ToDictionary(b => b.Name);
+
+        _levelList = JsonSerializer.Deserialize<List<LevelData>>(File.ReadAllText("Data/levels.json")).ToList();
+    }
+
+    private void LoadLevel(int id, Rectangle playArea, int streetLevel)
+    {
+        var level = _levelList.Find(l => l.ID == _levelID);
         int rightEdge = playArea.Width;
-        foreach (BuildingData data in buildings)
+        foreach (string houseName in level.Buildings)
         {
-            var building = new Building(_am, data, rightEdge, streetLevel, _nightmares);
-            _buildings.Add(building);
+            var buildingData = _buildingDict[houseName];
+            var building = new Building(_am, buildingData, rightEdge, streetLevel, _nightmareList);
+            _buildingList.Add(building);
             rightEdge = building.Bounds.Left;
-            _numResidents += building.NumResidents;
         }
+        _nightmareSystem.LoadLevel(_buildingList, level.NightmareSpawnRate, level.MaxNightmareFactor);
     }
 
-    private void LoadNightmares()
-    {
-        string json = File.ReadAllText("Data/nightmares.json");
-        var nightmares = JsonSerializer.Deserialize<List<NightmareData>>(json);
-
-        foreach (NightmareData data in nightmares)
-        {
-            _nightmares.Add(new Nightmare(_am, data));
-        }
-    }
 
     public override void Enter()
     {
@@ -259,7 +260,7 @@ public class Scene1 : GameScene
     {
         if (_orb.State != Orb.OrbState.InFlight) return;
 
-        foreach (Building building in _buildings)
+        foreach (Building building in _buildingList)
         {
             if (_orb.Bounds.Intersects(building.Bounds))
             {
@@ -277,12 +278,13 @@ public class Scene1 : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
-        var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
+        //var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
+        var darkToLightTint = Color.Lerp(Color.LightGray, Color.White, _clock.Progress);
 
         sb.Draw(_background, Vector2.Zero, darkToLightTint);
         DrawStreetBase(sb, darkToLightTint);
 
-        foreach (Building building in _buildings)
+        foreach (Building building in _buildingList)
         {
             building.Colour = darkToLightTint;
             building.Draw(sb);

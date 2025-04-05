@@ -8,26 +8,28 @@ namespace Orbarella;
 
 public class NightmareSystem
 {
-    // these values will later be refactored to be loaded in from a level definition
-    private const float NEW_NIGHTMARE_SPAWN = 2.2f;
-    private const float MAX_NIGHTMARE_FACTOR = 0.8f;
-
     private List<Building> _buildings;
     private float _maxCityNightmareLevel;
     private float _cityNightmareLevel;
-    private float _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+    private float _newDreamerTimer;
+    private float _spawnRate;
 
     static Random _random = new Random();
 
     public float CityLevel => _cityNightmareLevel / _maxCityNightmareLevel;
 
-    public NightmareSystem(List<Building> buildings)
+    public NightmareSystem()
     {
-        _buildings = buildings;
-        int numResidents = buildings.Sum(b => b.NumResidents);
-        _maxCityNightmareLevel = numResidents * MAX_NIGHTMARE_FACTOR;
     }
 
+    public void LoadLevel(List<Building> buildings, float spawnRate, float nightmareFactor)
+    {
+        _spawnRate = spawnRate;
+        _newDreamerTimer = spawnRate;
+        _buildings = buildings;
+        int numResidents = buildings.Sum(b => b.NumResidents);
+        _maxCityNightmareLevel = numResidents * nightmareFactor;
+    }
 
     public void Update(GameTime gt)
     {
@@ -58,7 +60,7 @@ public class NightmareSystem
             newNightmare = _buildings[buildingIdx].StartNightmare();
             if (newNightmare)
             {
-                _newDreamerTimer = _newDreamerTimer = NEW_NIGHTMARE_SPAWN;
+                _newDreamerTimer = _spawnRate;
                 return;
             }
             numBuildingsTested++;
