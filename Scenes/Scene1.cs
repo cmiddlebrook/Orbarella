@@ -63,7 +63,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(6), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(2), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 

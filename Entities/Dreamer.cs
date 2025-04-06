@@ -20,6 +20,7 @@ public class Dreamer : GameObject
     private Color _defaultWindowColour = new Color(34, 46, 59);
     private SpriteObject _dream;
     private float _dreamDuration;
+    private Vector2 _dreamSpriteOrigin;
     private Vector2 _dreamPosition;
     private float _dreamTimer;
     private float _sootheTimer;
@@ -40,13 +41,20 @@ public class Dreamer : GameObject
 
         _window = new SpriteObject(am.LoadTexture("window"), windowPosition, Vector2.Zero, 1.0f);
         _window.Colour = _defaultWindowColour;
-        _dreamPosition = new Vector2(_window.Position.X - 5, _window.Position.Y + 4);
-        _soothedGood = new SpriteObject(am.LoadTexture("good"), _dreamPosition, Vector2.Zero, 1f);
-        _soothedGreat = new SpriteObject(am.LoadTexture("great"), _dreamPosition, Vector2.Zero, 1f);
+        _dreamSpriteOrigin = new Vector2(16, 16); // centered for 32px sprites
+        _dreamPosition = new Vector2(_window.Position.X + 11, _window.Position.Y + 19); // offset from the window
+
+        // the sprites for the "happy feedback" need their position adjusted to account 
+        // for the scaling up of the size
+        _soothedGood = new SpriteObject(am.LoadTexture("good"), _dreamPosition, Vector2.Zero, 1.5f);
+        _soothedGood.Origin = _dreamSpriteOrigin;
+        //_soothedGood.DrawBounds = true;
+        _soothedGreat = new SpriteObject(am.LoadTexture("great"), _dreamPosition, Vector2.Zero, 2f);
+        _soothedGreat.Origin = _dreamSpriteOrigin;
+        //_soothedGreat.DrawBounds = true;
         _dreamDuration = _random.Next(1, 10) + BASE_DREAM_DURATION + (dreamDurationModifier * 1.2f);
         _dreamTimer = _dreamDuration;
         _sootheTimer = BASE_SOOTHE_DURATION;
-        //_drawBounds = true;
     }
 
     protected override void UpdateBounds()
@@ -100,10 +108,9 @@ public class Dreamer : GameObject
                 _sootheTimer = BASE_SOOTHE_DURATION;
                 _dreamState = DreamState.None;
             }
-            _soothedGood.Update(gt);
-            _soothedGreat.Update(gt);
+            //_soothedGood.Update(gt);
+            //_soothedGreat.Update(gt);
         }
-
 
         base.Update(gt);
     }
@@ -150,9 +157,10 @@ public class Dreamer : GameObject
         _nightmare = _nightmares[_random.Next(_nightmares.Count)];
         _window.Colour = _nightmare.Colour;
         _dream = new SpriteObject(_nightmare.Texture, _dreamPosition, Vector2.Zero, 1.0f);
+        _dream.Origin = _dreamSpriteOrigin;
     }
 
-    public void StopNightmare(bool isSoothed, Color orbColour)
+    public bool StopNightmare(bool isSoothed, Color orbColour)
     {
         _dreamState = DreamState.None;
         _window.Colour = _defaultWindowColour;
@@ -161,6 +169,8 @@ public class Dreamer : GameObject
         {
             _dreamState = _nightmare.Colour == orbColour ? DreamState.SoothedGreat : DreamState.SoothedGood;
         }
+
+        return _nightmare.Colour == orbColour;
     }
 
 
