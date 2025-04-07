@@ -90,7 +90,7 @@ public class Building : GameObject
             if (dreamer.IsDreaming && orb.Bounds.Intersects(dreamer.Bounds))
             {
                 isCollision = true;
-                isCorrectColour = dreamer.StopNightmare(true, orb.Colour);
+                isCorrectColour = dreamer.SootheNightmare(orb.Colour);
                 break;
             }
         }

@@ -11,13 +11,10 @@ public class Nightmare
     public Texture2D Texture { get; }
     public Color Colour { get; }
 
-    public Color SootheColour { get; }
-
     public Nightmare(AssetManager am, NightmareData data)
     {
         Name = data.Name;
         Texture = am.LoadTexture(data.Texture);
         Colour = new Color(data.Colour[0], data.Colour[1], data.Colour[2]);
-        SootheColour = new Color(255 - data.Colour[0], 255 - data.Colour[1], 255 - data.Colour[2]);
     }
 }
