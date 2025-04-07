@@ -1,5 +1,6 @@
 ﻿using CALIMOE;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -25,6 +26,8 @@ public class Dreamer : GameObject
     private Vector2 _dreamPosition;
     private float _dreamTimer;
     private SpriteObject _happyFeedback = null;
+    private SoundEffect _soothedGood;
+    private SoundEffect _soothedGreat;
     private float _soothedTimer;
     private DreamState _dreamState = DreamState.None;
     private List<Nightmare> _nightmares;
@@ -44,18 +47,11 @@ public class Dreamer : GameObject
         _window.Colour = _defaultWindowColour;
         _dreamSpriteOrigin = new Vector2(16, 16); // centered for 32px sprites
         _dreamPosition = new Vector2(_window.Position.X + 11, _window.Position.Y + 19); // offset from the window
-
-        // the sprites for the "happy feedback" need their position adjusted to account 
-        // for the scaling up of the size
-        //_soothedGood = new SpriteObject(am.LoadTexture("good"), _dreamPosition, Vector2.Zero, 1.5f);
-        //_soothedGood.Origin = _dreamSpriteOrigin;
-        //_soothedGood.DrawBounds = true;
-        //_soothedGreat = new SpriteObject(am.LoadTexture("great"), _dreamPosition, Vector2.Zero, 2f);
-        //_soothedGreat.Origin = _dreamSpriteOrigin;
-        //_soothedGreat.DrawBounds = true;
         _dreamDuration = _random.Next(1, 10) + BASE_DREAM_DURATION + (dreamDurationModifier * 1.2f);
         _dreamTimer = _dreamDuration;
         _soothedTimer = BASE_SOOTHED_DURATION;
+        _soothedGood = _am.LoadSoundFx("soothed-good");
+        _soothedGreat = _am.LoadSoundFx("soothed-great");
     }
 
     protected override void UpdateBounds()
@@ -160,6 +156,8 @@ public class Dreamer : GameObject
         var isCorrectColour = orbColour == _nightmare.Colour;
         var happySprite = isCorrectColour ? "great" : "good";
         var happyScale = isCorrectColour ? 2f : 1.5f;
+        var sound = isCorrectColour ? _soothedGreat : _soothedGood;
+        sound.Play();
         _happyFeedback = new SpriteObject(_am.LoadTexture(happySprite), _dreamPosition, Vector2.Zero, happyScale);
         _happyFeedback.Origin = _dreamSpriteOrigin;
         _dream = null;

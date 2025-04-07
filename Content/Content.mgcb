@@ -106,6 +106,18 @@
 /processorParam:Quality=Best
 /build:SoundFx/charge-orb.wav
 
+#begin SoundFx/soothed-good.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/soothed-good.wav
+
+#begin SoundFx/soothed-great.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/soothed-great.wav
+
 #begin Textures/anger.png
 /importer:TextureImporter
 /processor:TextureProcessor
