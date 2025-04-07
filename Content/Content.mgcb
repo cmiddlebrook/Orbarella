@@ -61,6 +61,13 @@
 /processorParam:Quality=Best
 /build:Fallback/silent-song.ogg
 
+#begin Fonts/EndPanels.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/processorParam:TextureFormat=Compressed
+/build:Fonts/EndPanels.spritefont
+
 #begin Fonts/FPS.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -105,6 +112,12 @@
 /processor:SoundEffectProcessor
 /processorParam:Quality=Best
 /build:SoundFx/charge-orb.wav
+
+#begin SoundFx/fire.wav
+/importer:WavImporter
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:SoundFx/fire.wav
 
 #begin SoundFx/soothed-good.wav
 /importer:WavImporter
@@ -465,6 +478,42 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/street-base.png
+
+#begin Textures/ui-panel-full1.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/ui-panel-full1.png
+
+#begin Textures/ui-panel-full2.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/ui-panel-full2.png
+
+#begin Textures/ui-panel-full4.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/ui-panel-full4.png
 
 #begin Textures/ui-panel-left.png
 /importer:TextureImporter

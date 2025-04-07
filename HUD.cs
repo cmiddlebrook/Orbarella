@@ -14,23 +14,26 @@ public class HUD
         LevelComplete
     }
     private Clock _clock;
-    private SpriteObject _clockPanel1;
-    private SpriteObject _clockPanel2;
-    private TextObject _clockText;
-    private TextObject _endLevelText;
     private EndLevelState _endLevelState = EndLevelState.InPlay;
     private NightmareMeter _nightmareMeter;
     private int _numScorePanels = 1;
     private int _scoreDigitWidth = 24;
     private Color _panelTextColour;
     private float _panelScale = 1.8f;
-    private TextObject _pressSpaceText;
     private int _score = 0;
+    private Vector2 _scorePanelMiddlePosition;
+
+    private TextObject _clockText;
+    private TextObject _mainPanelText;
+    private TextObject _subPanelText;
+    private TextObject _scoreText;
+
+    private SpriteObject _clockPanel1;
+    private SpriteObject _clockPanel2;
+    private SpriteObject _mainPanel;
     private SpriteObject _scorePanelLeft;
     private SpriteObject _scorePanelRight;
     private Texture2D _scorePanelMiddle;
-    private Vector2 _scorePanelMiddlePosition;
-    private TextObject _scoreText;
 
     public int Score
     {
@@ -60,19 +63,19 @@ public class HUD
         _clockText.CenterHorizontal(18);
         _clockText.Colour = _panelTextColour;
 
-        _endLevelText = new TextObject(am.LoadFont("Title"), "Game Over!");
-        _endLevelText.Colour = Color.Orange;
-        _endLevelText.Scale = 3.2f;
-        _endLevelText.Shadow = true;
-        _endLevelText.CenterHorizontal(200);
+        _mainPanel = new SpriteObject(am.LoadTexture("ui-panel-full4"), new Vector2(216, 150), Vector2.Zero, 6f);
+        _mainPanelText = new TextObject(am.LoadFont("EndPanels"), "Game Over!");
+        _mainPanelText.Colour = _panelTextColour;
+        _mainPanelText.ConfigureShadow(3, Color.LightGray);
+        _mainPanelText.CenterHorizontal(200);
 
         _nightmareMeter = new NightmareMeter(am);
 
-        _pressSpaceText = new TextObject(am.LoadFont("Title"), "Press Enter to continue");
-        _pressSpaceText.Colour = Color.LightGoldenrodYellow;
-        _pressSpaceText.Scale = 1.6f;
-        _pressSpaceText.ConfigureShadow(3, Color.Black);
-        _pressSpaceText.CenterHorizontal(350);
+        _subPanelText = new TextObject(am.LoadFont("EndPanels"), "Press ENTER to continue");
+        _subPanelText.Colour = Color.LightGray;
+        _subPanelText.Scale = 0.4f;
+        _subPanelText.ConfigureShadow(3, Color.Black);
+        _subPanelText.CenterHorizontal(350);
 
         _scorePanelLeft = new SpriteObject(am.LoadTexture("ui-panel-left"), new Vector2(40, 12), Vector2.Zero, _panelScale);
         _scorePanelRight = new SpriteObject(am.LoadTexture("ui-panel-right"), new Vector2(152, 12), Vector2.Zero, _panelScale);
@@ -92,12 +95,12 @@ public class HUD
 
         if (_endLevelState != EndLevelState.InPlay)
         {
-            _endLevelText.Update(gt);
+            _mainPanelText.Update(gt);
         }
 
         if (_endLevelState == EndLevelState.LevelComplete)
         {
-            _pressSpaceText.Update(gt);
+            _subPanelText.Update(gt);
         }
     }
 
@@ -108,19 +111,21 @@ public class HUD
     public void WinLevel()
     {
         _endLevelState = EndLevelState.LevelComplete;
-        _endLevelText.Text = "Next Level!";
+        _mainPanelText.Text = "Next Level!";
     }
 
     public void LoseGame()
     {
         _endLevelState = EndLevelState.GameLost;
-        _endLevelText.Text = "Game Over!";
+        _mainPanelText.Text = "Game Over!";
+        _subPanelText.Text = "Final Score: " + _score.ToString();
     }
 
     public void WinGame()
     {
         _endLevelState = EndLevelState.GameWon;
-        _endLevelText.Text = "You Win!";
+        _mainPanelText.Text = " YOU WIN!";
+        _subPanelText.Text = "Final Score: " + _score.ToString();
     }
 
     public void Draw(SpriteBatch sb)
@@ -147,14 +152,11 @@ public class HUD
         {
             case EndLevelState.GameLost:
             case EndLevelState.GameWon:
-                {
-                    _endLevelText.Draw(sb);
-                    break;
-                }
             case EndLevelState.LevelComplete:
                 {
-                    _endLevelText.Draw(sb);
-                    _pressSpaceText.Draw(sb);
+                    _mainPanel.Draw(sb);
+                    _mainPanelText.Draw(sb);
+                    _subPanelText.Draw(sb);
                     break;
                 }
             case EndLevelState.InPlay:

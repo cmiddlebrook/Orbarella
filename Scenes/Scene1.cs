@@ -63,7 +63,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(2), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(0.05), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -219,6 +219,7 @@ public class Scene1 : GameScene
             case PlayState.StartNewLevel:
                 {
                     LoadLevel();
+                    _player.Reset();
                     _orb.Reload();
                     _hud.Play();
                     _playState = PlayState.InPlay;
@@ -243,6 +244,19 @@ public class Scene1 : GameScene
             case PlayState.Paused:
             default:
                 break;
+        }
+
+        switch (_playState)
+        {
+            case PlayState.GameLost:
+            case PlayState.LevelCompleted:
+            case PlayState.GameWon:
+            case PlayState.Paused:
+                {
+                    _player.Silence();
+                    _orb.Silence();
+                    break;
+                }
         }
 
         _hud.NightmareLevel = _nightmareSystem.CityLevel;

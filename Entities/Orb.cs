@@ -26,6 +26,7 @@ public class Orb : GameObject
 
     private SoundEffectInstance _chargeOrbFx;
     private CannonData _cannonData;
+    private SoundEffect _fireFx;
     private SpriteObject _orb;
     private SpriteObject _progressBarContainer;
     private Texture2D _progressBarTick;
@@ -47,6 +48,7 @@ public class Orb : GameObject
     public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
         _chargeOrbFx = am.LoadLoopedSoundFx("charge-orb");
+        _fireFx = am.LoadSoundFx("fire");
 
         _positionOffset = positionOffset;
         _progressBarContainer = new SpriteObject(am.LoadTexture("progress-bar-container"));
@@ -174,6 +176,7 @@ public class Orb : GameObject
     {
         _chargeTimer = 0f;
         _numChargeTicks = 0;
+        _chargeOrbFx.Stop();
         _orbState = OrbState.ReadyPosition;
     }
     public void StartCharging()
@@ -193,6 +196,7 @@ public class Orb : GameObject
         {
             _chargeOrbFx.Stop();
             _orbState = OrbState.InFlight;
+            _fireFx.Play();
         }
     }
 
@@ -212,6 +216,11 @@ public class Orb : GameObject
     {
         _orb.Colour = _orbColours[_currentColour];
         _colour = _orbColours[_currentColour];
+    }
+
+    public void Silence()
+    {
+        _chargeOrbFx.Stop();
     }
 
 }

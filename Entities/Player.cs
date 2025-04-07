@@ -169,6 +169,7 @@ public class Player : GameObject
         _wizard.Reset();
         _barrel.Reset();
         _base.Reset();
+        Silence();
     }
 
     public void MoveLeft()
@@ -189,6 +190,12 @@ public class Player : GameObject
     public void RotateBarrelLeft()
     {
         _barrelState = BarrelState.RotatingLeft;
+    }
+
+    public void Silence()
+    {
+        _cannonRollFx.Stop();
+        _cannonRotateFx.Stop();
     }
 
 }
