@@ -108,8 +108,6 @@ public class Dreamer : GameObject
                 _sootheTimer = BASE_SOOTHE_DURATION;
                 _dreamState = DreamState.None;
             }
-            //_soothedGood.Update(gt);
-            //_soothedGreat.Update(gt);
         }
 
         base.Update(gt);
@@ -168,6 +166,7 @@ public class Dreamer : GameObject
         if (isSoothed)
         {
             _dreamState = _nightmare.Colour == orbColour ? DreamState.SoothedGreat : DreamState.SoothedGood;
+            _sootheTimer = BASE_SOOTHE_DURATION;
         }
 
         return _nightmare.Colour == orbColour;

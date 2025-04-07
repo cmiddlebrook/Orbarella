@@ -14,12 +14,22 @@ public class HUD
         LevelComplete
     }
     private Clock _clock;
+    private SpriteObject _clockPanel1;
+    private SpriteObject _clockPanel2;
     private TextObject _clockText;
     private TextObject _endLevelText;
     private EndLevelState _endLevelState = EndLevelState.InPlay;
     private NightmareMeter _nightmareMeter;
+    private int _numScorePanels = 1;
+    private int _scoreDigitWidth = 24;
+    private Color _panelTextColour;
+    private float _panelScale = 1.8f;
     private TextObject _pressSpaceText;
     private int _score = 0;
+    private SpriteObject _scorePanelLeft;
+    private SpriteObject _scorePanelRight;
+    private Texture2D _scorePanelMiddle;
+    private Vector2 _scorePanelMiddlePosition;
     private TextObject _scoreText;
 
     public int Score
@@ -27,7 +37,10 @@ public class HUD
         set
         {
             _score = value;
-            _scoreText.Text = "Score: " + _score.ToString();
+            var scoreString = _score.ToString();
+            _scoreText.Text = "Score: " + scoreString;
+            _numScorePanels = scoreString.Length;
+            _scorePanelRight.Position = new Vector2(_scorePanelLeft.Bounds.Right + ((_numScorePanels + 1) * _scoreDigitWidth), 12);
         }
     }
 
@@ -38,9 +51,14 @@ public class HUD
 
     public HUD(AssetManager am, Clock clock)
     {
+        _panelTextColour = new Color(30, 30, 60);
+
         _clock = clock;
+        _clockPanel1 = new SpriteObject(am.LoadTexture("ui-panel-left"), new Vector2(544, 12), Vector2.Zero, _panelScale);
+        _clockPanel2 = new SpriteObject(am.LoadTexture("ui-panel-right"), new Vector2(598, 12), Vector2.Zero, _panelScale);
         _clockText = new TextObject(am.LoadFont("Score"));
-        _clockText.CenterHorizontal(12);
+        _clockText.CenterHorizontal(18);
+        _clockText.Colour = _panelTextColour;
 
         _endLevelText = new TextObject(am.LoadFont("Title"), "Game Over!");
         _endLevelText.Colour = Color.Orange;
@@ -56,8 +74,13 @@ public class HUD
         _pressSpaceText.ConfigureShadow(3, Color.Black);
         _pressSpaceText.CenterHorizontal(350);
 
+        _scorePanelLeft = new SpriteObject(am.LoadTexture("ui-panel-left"), new Vector2(40, 12), Vector2.Zero, _panelScale);
+        _scorePanelRight = new SpriteObject(am.LoadTexture("ui-panel-right"), new Vector2(152, 12), Vector2.Zero, _panelScale);
+        _scorePanelMiddle = am.LoadTexture("ui-panel-middle");
+        _scorePanelMiddlePosition = new Vector2(_scorePanelLeft.Bounds.Right + 1, 12);
         _scoreText = new TextObject(am.LoadFont("Score"), "Score: 0");
-        _scoreText.Position = new Vector2(40, 12);
+        _scoreText.Position = new Vector2(52, 18);
+        _scoreText.Colour = _panelTextColour;
 
     }
 
@@ -102,8 +125,22 @@ public class HUD
 
     public void Draw(SpriteBatch sb)
     {
+        _clockPanel1.Draw(sb);
+        _clockPanel2.Draw(sb);
         _clockText.Draw(sb);
+
+        _scorePanelLeft.Draw(sb);
+
+        for (int i = 0; i < _numScorePanels; i++)
+        {
+            var panelOffset = new Vector2(i * _scoreDigitWidth, 0);
+            sb.Draw(_scorePanelMiddle, _scorePanelMiddlePosition + panelOffset, null, Color.White, 0f, 
+                Vector2.Zero, _panelScale, SpriteEffects.None, 0);
+        }
+
+        _scorePanelRight.Draw(sb);
         _scoreText.Draw(sb);
+
         _nightmareMeter.Draw(sb);
 
         switch (_endLevelState)
