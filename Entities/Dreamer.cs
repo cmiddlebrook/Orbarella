@@ -77,8 +77,8 @@ public class Dreamer : GameObject
 
             case DreamState.Soothed:
                 {
-                    _happyFeedback.Position -= new Vector2(0, delta * 100);
                     _happyFeedback.Scale *= 1.0f - (delta * 0.1f);
+                    _happyFeedback.Update(gt);
 
                     _soothedTimer -= delta;
                     if (_soothedTimer <= 0)
@@ -160,6 +160,7 @@ public class Dreamer : GameObject
         sound.Play();
         _happyFeedback = new SpriteObject(_am.LoadTexture(happySprite), _dreamPosition, Vector2.Zero, happyScale);
         _happyFeedback.Origin = _dreamSpriteOrigin;
+        _happyFeedback.Velocity = new Vector2(0, -100);
         _dream = null;
 
         return isCorrectColour;
