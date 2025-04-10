@@ -63,7 +63,7 @@ public class Scene1 : GameScene
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
-        _clock = new Clock(TimeSpan.FromMinutes(5), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        _clock = new Clock(TimeSpan.FromMinutes(0.5), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
     }
 
 
@@ -120,7 +120,7 @@ public class Scene1 : GameScene
         MediaPlayer.Play(_cityAmbience);
     }
 
-    public override void HandleInput(GameTime gt)
+    public override void HandleInput()
     {
         if (_playState == PlayState.InPlay)
         {
@@ -262,7 +262,7 @@ public class Scene1 : GameScene
         _hud.NightmareLevel = _nightmareSystem.CityLevel;
         _hud.Update(gt);
 
-        HandleInput(gt);
+        HandleInput();
 
         base.Update(gt);
     }
@@ -291,8 +291,10 @@ public class Scene1 : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
+        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
+
         var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
-        //var darkToLightTint = Color.Lerp(Color.LightGray, Color.White, _clock.Progress); // for testing!
+        //var darkToLightTint = Color.Lerp(Color.White, Color.White, _clock.Progress); // for testing!
 
         sb.Draw(_background, Vector2.Zero, darkToLightTint);
         DrawStreetBase(sb, darkToLightTint);
@@ -307,6 +309,7 @@ public class Scene1 : GameScene
         _orb.Draw(sb);
         _player.Draw(sb);
 
+        sb.End();
     }
 
     private void DrawStreetBase(SpriteBatch sb, Color timeTint)

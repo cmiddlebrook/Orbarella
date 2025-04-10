@@ -95,6 +95,12 @@
 /processorParam:Quality=Best
 /build:Music/city-ambience.ogg
 
+#begin Music/Empty Streets.ogg
+/importer:OggImporter
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/Empty Streets.ogg
+
 #begin SoundFx/cannon-roll.wav
 /importer:WavImporter
 /processor:SoundEffectProcessor
@@ -203,6 +209,18 @@
 /processorParam:TextureFormat=Color
 /build:Textures/CannonBase.png
 
+#begin Textures/city-base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/city-base.png
+
 #begin Textures/fear.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -226,6 +244,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/frustration.png
+
+#begin Textures/gameover.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/gameover.png
 
 #begin Textures/good.png
 /importer:TextureImporter
@@ -478,6 +508,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Textures/street-base.png
+
+#begin Textures/TitleScreen.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Textures/TitleScreen.png
 
 #begin Textures/ui-panel-full1.png
 /importer:TextureImporter

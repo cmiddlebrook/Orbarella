@@ -11,7 +11,7 @@ public class Orbarella : Calimoe
     public Orbarella()
     {
         IsMouseVisible = true;
-        _showFPS = false;
+        _showFPS = true;
         _fallbackTextureSize = 32;
     }
 
@@ -26,8 +26,9 @@ public class Orbarella : Calimoe
 
         var scene1 = new Scene1(_sm, _am, _ih);
 
+        _sm.AddScene(new Intro(_sm, _am, _ih));
         _sm.AddScene(scene1);
-        _sm.SwitchScene("scene1");
+        _sm.SwitchScene("intro");
 
         _graphics.PreferredBackBufferWidth = scene1.WindowWidth;
         _graphics.PreferredBackBufferHeight = scene1.WindowHeight;
@@ -48,9 +49,7 @@ public class Orbarella : Calimoe
             GraphicsDevice.Clear(ClearColour);
         }
 
-        _spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
         _sm.Draw(_spriteBatch);
-        _spriteBatch.End();
 
         base.Draw(gt);
     }
