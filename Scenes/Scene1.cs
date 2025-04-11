@@ -64,10 +64,11 @@ public class Scene1 : GameScene
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
         _clock = new Clock(TimeSpan.FromMinutes(6), TimeSpan.FromHours(0), TimeSpan.FromHours(6));
+        LoadContent();
     }
 
 
-    public override void LoadContent()
+    protected override void LoadContent()
     {
         _cityAmbience = Calimoe.AssetManager.LoadMusic("city-ambience");
 
@@ -291,8 +292,6 @@ public class Scene1 : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
-        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
-
         var darkToLightTint = Color.Lerp(_darkTint, Color.White, _clock.Progress);
         //var darkToLightTint = Color.Lerp(Color.White, Color.White, _clock.Progress); // for testing!
 
@@ -308,8 +307,6 @@ public class Scene1 : GameScene
         _hud.Draw(sb);
         _orb.Draw(sb);
         _player.Draw(sb);
-
-        sb.End();
     }
 
     private void DrawStreetBase(SpriteBatch sb, Color timeTint)

@@ -17,9 +17,10 @@ public class Intro : GameScene
         : base(sm, ih)
     {
         _name = "intro";
+        LoadContent();
     }
 
-    public override void LoadContent()
+    protected override void LoadContent()
     {
         _title = Calimoe.AssetManager.LoadTexture("TitleScreen");
         _introMusic = Calimoe.AssetManager.LoadMusic("Empty Streets");
@@ -54,10 +55,7 @@ public class Intro : GameScene
 
     public override void Draw(SpriteBatch sb)
     {
-        sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp);
         sb.Draw(_title, Vector2.Zero, Color.White);
-        sb.End();
-
     }
 
 }

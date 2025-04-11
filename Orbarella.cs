@@ -26,14 +26,13 @@ public class Orbarella : Calimoe
 
         var scene1 = new Scene1(_sm, _ih);
 
+        _windowSize = new Point(scene1.WindowWidth, scene1.WindowHeight);
+        _worldSize = _windowSize;
+        ApplyResolution(false);
+
         _sm.AddScene(new Intro(_sm, _ih));
         _sm.AddScene(scene1);
         _sm.SwitchScene("intro");
-
-        _graphics.PreferredBackBufferWidth = scene1.WindowWidth;
-        _graphics.PreferredBackBufferHeight = scene1.WindowHeight;
-        _graphics.ApplyChanges();
-
     }
 
     protected override void Update(GameTime gt)
