@@ -8,6 +8,7 @@ public class NightmareMeter : GameObject
 {
     private const int MAX_TICKS = 24;
     private SpriteObject _container;
+    private SpriteObject _skull;
     private Texture2D _tick;
     private Vector2[] _tickPositions;
     private Color[] _tickColours;
@@ -16,7 +17,8 @@ public class NightmareMeter : GameObject
 
     public NightmareMeter(AssetManager am)
     {
-        _container = new SpriteObject(am.LoadTexture("nightmare-meter-container"), new Vector2(8, 8), Vector2.Zero, 1.0f);
+        _skull = new SpriteObject(am.LoadTexture("gameover"), new Vector2(6, 10), Vector2.Zero, 1.0f);
+        _container = new SpriteObject(am.LoadTexture("nightmare-meter-container"), new Vector2(12, 36), Vector2.Zero, 1.0f);
         _tick = am.LoadTexture("mightmare-meter-tick");
         SetupMeter();
     }
@@ -69,6 +71,7 @@ public class NightmareMeter : GameObject
     public override void Draw(SpriteBatch sb)
     {
         _container.Draw(sb);
+        _skull.Draw(sb);
         for (int i = 0; i < _numTicks; i++)
         {
             sb.Draw(_tick, _container.Position + _tickPositions[i], _tickColours[i]);

@@ -361,3 +361,17 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Ignore raw image and vector assets, but allow MonoGame's *.xnb Files
+!**/*.xnb
+*.png
+*.jpg
+*.jpeg
+*.svg
+*.ai
+*.eps
+*.wav
+*.mp3
+*.mp4
+*.mov
+*.ogg
