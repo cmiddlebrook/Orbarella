@@ -51,12 +51,11 @@ public class Orb : GameObject
         _fireFx = Calimoe.AssetManager.LoadSoundFx("fire");
 
         _positionOffset = positionOffset;
-        _progressBarContainer = new SpriteObject(Calimoe.AssetManager.LoadTexture("progress-bar-container"));
+        _progressBarContainer = new SpriteObject("progress-bar-container");
         _progressBarTick = Calimoe.AssetManager.LoadTexture("progress-bar-tick");
         _playArea = playArea;
-        var orb = Calimoe.AssetManager.LoadTexture("orb-greyscale");
-        _orb = new SpriteObject(orb);
-        _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
+        _orb = new SpriteObject("orb-greyscale");
+        _orb.Origin = new Vector2(_orb.Bounds.Width / 2, _orb.Bounds.Height / 2);
         SetupProgressBar();
         SetupOrbColours(nightmares);
         UpdateBounds();

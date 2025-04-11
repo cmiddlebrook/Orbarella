@@ -41,7 +41,7 @@ public class Dreamer : GameObject
     {
         _nightmares = nightmares;
 
-        _window = new SpriteObject(Calimoe.AssetManager.LoadTexture("window"), windowPosition, Vector2.Zero, 1.0f);
+        _window = new SpriteObject("window", windowPosition, Vector2.Zero, 1.0f);
         _window.Colour = _defaultWindowColour;
         _dreamSpriteOrigin = new Vector2(16, 16); // centered for 32px sprites
         _dreamPosition = new Vector2(_window.Position.X + 11, _window.Position.Y + 19); // offset from the window
@@ -135,7 +135,7 @@ public class Dreamer : GameObject
         _dreamTimer = _dreamDuration;
         _nightmare = _nightmares[_random.Next(_nightmares.Count)];
         _window.Colour = _nightmare.Colour;
-        _dream = new SpriteObject(_nightmare.Texture, _dreamPosition, Vector2.Zero, 1.0f);
+        _dream = new SpriteObject(_nightmare.TexturePath, _dreamPosition, Vector2.Zero, 1.0f);
         _dream.Origin = _dreamSpriteOrigin;
         _happyFeedback = null;
     }
@@ -156,7 +156,7 @@ public class Dreamer : GameObject
         var happyScale = isCorrectColour ? 2f : 1.5f;
         var sound = isCorrectColour ? _soothedGreat : _soothedGood;
         sound.Play();
-        _happyFeedback = new SpriteObject(Calimoe.AssetManager.LoadTexture(happySprite), _dreamPosition, Vector2.Zero, happyScale);
+        _happyFeedback = new SpriteObject(happySprite, _dreamPosition, Vector2.Zero, happyScale);
         _happyFeedback.Origin = _dreamSpriteOrigin;
         _happyFeedback.Velocity = new Vector2(0, -100);
         _dream = null;

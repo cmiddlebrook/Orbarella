@@ -52,17 +52,14 @@ public class Player : GameObject
         _cannonRotateFx = Calimoe.AssetManager.LoadLoopedSoundFx("cannon-rotate");
 
         _rightEdge = rightEdge;
-        var wizard = Calimoe.AssetManager.LoadTexture("wizard");
-        _wizardPosition = new Vector2(80, streetLevel - wizard.Height);
-        _wizard = new SpriteObject(wizard, _wizardPosition, Vector2.Zero, 1.0f);
+        _wizard = new SpriteObject("wizard", _wizardPosition, Vector2.Zero, 1.0f);
+        _wizardPosition = new Vector2(80, streetLevel - _wizard.Bounds.Height);
         var barrelOrigin = new Vector2(20, 35);
-        var cannonBarrel = Calimoe.AssetManager.LoadTexture("CannonBarrel");
-        _barrelPositionOffset = new Vector2(100, wizard.Height - cannonBarrel.Height + barrelOrigin.Y);
-        _barrel = new SpriteObject(cannonBarrel, _wizardPosition + _barrelPositionOffset, Vector2.Zero, 1.0f);
+        _barrel = new SpriteObject("CannonBarrel", _wizardPosition + _barrelPositionOffset, Vector2.Zero, 1.0f);
+        _barrelPositionOffset = new Vector2(100, _wizard.Bounds.Height - _barrel.Bounds.Height + barrelOrigin.Y);
         _barrel.Origin = barrelOrigin;
-        var cannonBase = Calimoe.AssetManager.LoadTexture("CannonBase");
-        _basePositionOffset = new Vector2(68, wizard.Height - cannonBase.Height);
-        _base = new SpriteObject(cannonBase, _wizardPosition + _basePositionOffset, Vector2.Zero, 1.0f);
+        _base = new SpriteObject("CannonBase", _wizardPosition + _basePositionOffset, Vector2.Zero, 1.0f);
+        _basePositionOffset = new Vector2(68, _wizard.Bounds.Height - _base.Bounds.Height);
         Angle = 90f;
         UpdateBounds();
         //_drawBounds = true;

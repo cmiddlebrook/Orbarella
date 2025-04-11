@@ -11,7 +11,7 @@ public class Orbarella : Calimoe
     public Orbarella()
     {
         IsMouseVisible = true;
-        _showFPS = false;
+        ShowFPS = false;
         _fallbackTextureSize = 32;
     }
 

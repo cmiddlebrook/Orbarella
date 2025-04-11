@@ -17,8 +17,8 @@ public class NightmareMeter : GameObject
 
     public NightmareMeter()
     {
-        _skull = new SpriteObject(Calimoe.AssetManager.LoadTexture("gameover"), new Vector2(6, 10), Vector2.Zero, 1.0f);
-        _container = new SpriteObject(Calimoe.AssetManager.LoadTexture("nightmare-meter-container"), new Vector2(12, 36), Vector2.Zero, 1.0f);
+        _skull = new SpriteObject("gameover", new Vector2(6, 10), Vector2.Zero, 1.0f);
+        _container = new SpriteObject("nightmare-meter-container", new Vector2(12, 36), Vector2.Zero, 1.0f);
         _tick = Calimoe.AssetManager.LoadTexture("mightmare-meter-tick");
         SetupMeter();
     }

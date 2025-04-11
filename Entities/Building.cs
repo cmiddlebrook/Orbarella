@@ -29,8 +29,8 @@ public class Building : GameObject
         _nightmares = nightmares;
         _streetLevel = streetLevel;
         var buildingTx = Calimoe.AssetManager.LoadTexture(data.Name);
-        var position = new Vector2(rightEdge - buildingTx.Width - 10, streetLevel - buildingTx.Height);
-        _building = new SpriteObject(buildingTx, position, Vector2.Zero, 1.0f);
+        _building = new SpriteObject(data.Name, Vector2.Zero, Vector2.Zero, 1.0f);
+        _building.Position = new Vector2(rightEdge - _building.Bounds.Width - 10, streetLevel - _building.Bounds.Height);
         CreateWindows(data.Windows);
         UpdateBounds();
         //_drawBounds = true;

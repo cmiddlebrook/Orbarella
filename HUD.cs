@@ -57,13 +57,13 @@ public class HUD
         _panelTextColour = new Color(30, 30, 60);
 
         _clock = clock;
-        _clockPanel1 = new SpriteObject(Calimoe.AssetManager.LoadTexture("ui-panel-left"), new Vector2(544, 12), Vector2.Zero, _panelScale);
-        _clockPanel2 = new SpriteObject(Calimoe.AssetManager.LoadTexture("ui-panel-right"), new Vector2(598, 12), Vector2.Zero, _panelScale);
+        _clockPanel1 = new SpriteObject("ui-panel-left", new Vector2(544, 12), Vector2.Zero, _panelScale);
+        _clockPanel2 = new SpriteObject("ui-panel-right", new Vector2(598, 12), Vector2.Zero, _panelScale);
         _clockText = new TextObject(Calimoe.AssetManager.LoadFont("Score"));
         _clockText.CenterHorizontal(18);
         _clockText.Colour = _panelTextColour;
 
-        _mainPanel = new SpriteObject(Calimoe.AssetManager.LoadTexture("ui-panel-full4"), new Vector2(216, 150), Vector2.Zero, 6f);
+        _mainPanel = new SpriteObject("ui-panel-full4", new Vector2(216, 150), Vector2.Zero, 6f);
         _mainPanelText = new TextObject(Calimoe.AssetManager.LoadFont("EndPanels"), "Game Over!");
         _mainPanelText.Colour = _panelTextColour;
         _mainPanelText.ConfigureShadow(3, Color.LightGray);
@@ -77,8 +77,8 @@ public class HUD
         _subPanelText.ConfigureShadow(3, Color.Black);
         _subPanelText.CenterHorizontal(350);
 
-        _scorePanelLeft = new SpriteObject(Calimoe.AssetManager.LoadTexture("ui-panel-left"), new Vector2(40, 12), Vector2.Zero, _panelScale);
-        _scorePanelRight = new SpriteObject(Calimoe.AssetManager.LoadTexture("ui-panel-right"), new Vector2(152, 12), Vector2.Zero, _panelScale);
+        _scorePanelLeft = new SpriteObject("ui-panel-left", new Vector2(40, 12), Vector2.Zero, _panelScale);
+        _scorePanelRight = new SpriteObject("ui-panel-right", new Vector2(152, 12), Vector2.Zero, _panelScale);
         _scorePanelMiddle = Calimoe.AssetManager.LoadTexture("ui-panel-middle");
         _scorePanelMiddlePosition = new Vector2(_scorePanelLeft.Bounds.Right + 1, 12);
         _scoreText = new TextObject(Calimoe.AssetManager.LoadFont("Score"), "Score: 0");
