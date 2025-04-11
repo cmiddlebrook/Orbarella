@@ -21,30 +21,29 @@ public class Building : GameObject
     public int NumDreaming => _dreamers.Count(dreamer => dreamer.IsDreaming);
 
 
-    public Building(AssetManager am,
-                    BuildingData data,
+    public Building(BuildingData data,
                     int rightEdge, 
                     int streetLevel,
                     List<Nightmare> nightmares)
     {
         _nightmares = nightmares;
         _streetLevel = streetLevel;
-        var buildingTx = am.LoadTexture(data.Name);
+        var buildingTx = Calimoe.AssetManager.LoadTexture(data.Name);
         var position = new Vector2(rightEdge - buildingTx.Width - 10, streetLevel - buildingTx.Height);
         _building = new SpriteObject(buildingTx, position, Vector2.Zero, 1.0f);
-        CreateWindows(am, data.Windows);
+        CreateWindows(data.Windows);
         UpdateBounds();
         //_drawBounds = true;
     }
 
-    private void CreateWindows(AssetManager am, List<WindowPosition> windows)
+    private void CreateWindows(List<WindowPosition> windows)
     {
         _dreamers = new List<Dreamer>();
         int numWindows = windows.Count;
         foreach (WindowPosition wp in windows)
         {
             var position = new Vector2(_building.Position.X + wp.X, _building.Position.Y + wp.Y);
-            var dreamer = new Dreamer(am, position, _nightmares, numWindows);
+            var dreamer = new Dreamer(position, _nightmares, numWindows);
             _dreamers.Add(dreamer);
         }
         _numResidents = _dreamers.Count;

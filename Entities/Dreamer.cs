@@ -18,7 +18,6 @@ public class Dreamer : GameObject
     private const int BASE_DREAM_DURATION = 10;
     private const int BASE_SOOTHED_DURATION = 5;
 
-    private AssetManager _am;
     private Color _defaultWindowColour = new Color(34, 46, 59);
     private SpriteObject _dream;
     private float _dreamDuration;
@@ -38,20 +37,19 @@ public class Dreamer : GameObject
 
     public bool IsDreaming => _dreamState == DreamState.Dreaming;
 
-    public Dreamer(AssetManager am, Vector2 windowPosition, List<Nightmare> nightmares, int dreamDurationModifier)
+    public Dreamer(Vector2 windowPosition, List<Nightmare> nightmares, int dreamDurationModifier)
     {
-        _am = am;
         _nightmares = nightmares;
 
-        _window = new SpriteObject(_am.LoadTexture("window"), windowPosition, Vector2.Zero, 1.0f);
+        _window = new SpriteObject(Calimoe.AssetManager.LoadTexture("window"), windowPosition, Vector2.Zero, 1.0f);
         _window.Colour = _defaultWindowColour;
         _dreamSpriteOrigin = new Vector2(16, 16); // centered for 32px sprites
         _dreamPosition = new Vector2(_window.Position.X + 11, _window.Position.Y + 19); // offset from the window
         _dreamDuration = _random.Next(1, 10) + BASE_DREAM_DURATION + (dreamDurationModifier * 1.2f);
         _dreamTimer = _dreamDuration;
         _soothedTimer = BASE_SOOTHED_DURATION;
-        _soothedGood = _am.LoadSoundFx("soothed-good");
-        _soothedGreat = _am.LoadSoundFx("soothed-great");
+        _soothedGood = Calimoe.AssetManager.LoadSoundFx("soothed-good");
+        _soothedGreat = Calimoe.AssetManager.LoadSoundFx("soothed-great");
     }
 
     protected override void UpdateBounds()
@@ -158,7 +156,7 @@ public class Dreamer : GameObject
         var happyScale = isCorrectColour ? 2f : 1.5f;
         var sound = isCorrectColour ? _soothedGreat : _soothedGood;
         sound.Play();
-        _happyFeedback = new SpriteObject(_am.LoadTexture(happySprite), _dreamPosition, Vector2.Zero, happyScale);
+        _happyFeedback = new SpriteObject(Calimoe.AssetManager.LoadTexture(happySprite), _dreamPosition, Vector2.Zero, happyScale);
         _happyFeedback.Origin = _dreamSpriteOrigin;
         _happyFeedback.Velocity = new Vector2(0, -100);
         _dream = null;

@@ -24,9 +24,9 @@ public class Orbarella : Calimoe
     {
         base.LoadContent(); // ensure the AssetManager gets loaded
 
-        var scene1 = new Scene1(_sm, _am, _ih);
+        var scene1 = new Scene1(_sm, _ih);
 
-        _sm.AddScene(new Intro(_sm, _am, _ih));
+        _sm.AddScene(new Intro(_sm, _ih));
         _sm.AddScene(scene1);
         _sm.SwitchScene("intro");
 

@@ -58,8 +58,8 @@ public class Scene1 : GameScene
     public int WindowWidth => _background.Width;
     public int WindowHeight => _background.Height;
 
-    public Scene1(SceneManager sm, AssetManager am, InputHelper ih)
-        : base(sm, am, ih)
+    public Scene1(SceneManager sm, InputHelper ih)
+        : base(sm, ih)
     {
         _name = "scene1";
         _clearColour = new Color(0x10, 0x10, 0x10);
@@ -69,10 +69,10 @@ public class Scene1 : GameScene
 
     public override void LoadContent()
     {
-        _cityAmbience = _am.LoadMusic("city-ambience");
+        _cityAmbience = Calimoe.AssetManager.LoadMusic("city-ambience");
 
-        _background = _am.LoadTexture("Scene1");
-        _streetBase = _am.LoadTexture("street-base");
+        _background = Calimoe.AssetManager.LoadTexture("Scene1");
+        _streetBase = Calimoe.AssetManager.LoadTexture("street-base");
         _streetLevel = WindowHeight - _streetBase.Height;
         _playArea = new Rectangle(0, 0, WindowWidth, WindowHeight); // window size set from background, so load that first!
 
@@ -80,15 +80,15 @@ public class Scene1 : GameScene
         LoadData();
         LoadLevel();
 
-        _hud = new HUD(_am, _clock);
-        _player = new Player(_am, _streetLevel + 20, WindowWidth);
-        _orb = new Orb(_am, new Vector2(64, -7), _playArea, _nightmareList);
+        _hud = new HUD(_clock);
+        _player = new Player(_streetLevel + 20, WindowWidth);
+        _orb = new Orb(new Vector2(64, -7), _playArea, _nightmareList);
     }
 
     private void LoadData()
     {
         var nightmares = JsonSerializer.Deserialize<List<NightmareData>>(File.ReadAllText("Data/nightmares.json"));
-        _nightmareList = nightmares.Select(data => new Nightmare(_am, data)).ToList();
+        _nightmareList = nightmares.Select(data => new Nightmare(data)).ToList();
 
         var buildingList = JsonSerializer.Deserialize<List<BuildingData>>(File.ReadAllText("Data/buildings.json"));
         _buildingDict = buildingList.ToDictionary(b => b.Name);
@@ -104,7 +104,7 @@ public class Scene1 : GameScene
         foreach (string houseName in level.Buildings)
         {
             var buildingData = _buildingDict[houseName];
-            var building = new Building(_am, buildingData, rightEdge, _streetLevel, _nightmareList);
+            var building = new Building(buildingData, rightEdge, _streetLevel, _nightmareList);
             _buildingList.Add(building);
             rightEdge = building.Bounds.Left;
         }

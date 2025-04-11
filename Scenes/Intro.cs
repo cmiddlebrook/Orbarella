@@ -13,16 +13,16 @@ public class Intro : GameScene
     private Texture2D _title;
     private Song _introMusic;
 
-    public Intro(SceneManager sm, AssetManager am, InputHelper ih)
-        : base(sm, am, ih)
+    public Intro(SceneManager sm, InputHelper ih)
+        : base(sm, ih)
     {
         _name = "intro";
     }
 
     public override void LoadContent()
     {
-        _title = _am.LoadTexture("TitleScreen");
-        _introMusic = _am.LoadMusic("Empty Streets");
+        _title = Calimoe.AssetManager.LoadTexture("TitleScreen");
+        _introMusic = Calimoe.AssetManager.LoadMusic("Empty Streets");
     }
 
     public override void Enter()

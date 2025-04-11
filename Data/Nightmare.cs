@@ -11,10 +11,10 @@ public class Nightmare
     public Texture2D Texture { get; }
     public Color Colour { get; }
 
-    public Nightmare(AssetManager am, NightmareData data)
+    public Nightmare(NightmareData data)
     {
         Name = data.Name;
-        Texture = am.LoadTexture(data.Texture);
+        Texture = Calimoe.AssetManager.LoadTexture(data.Texture);
         Colour = new Color(data.Colour[0], data.Colour[1], data.Colour[2]);
     }
 }

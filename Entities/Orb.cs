@@ -45,16 +45,16 @@ public class Orb : GameObject
     public OrbState State => _orbState;
 
 
-    public Orb(AssetManager am, Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
+    public Orb(Vector2 positionOffset, Rectangle playArea, List<Nightmare> nightmares)
     {
-        _chargeOrbFx = am.LoadLoopedSoundFx("charge-orb");
-        _fireFx = am.LoadSoundFx("fire");
+        _chargeOrbFx = Calimoe.AssetManager.LoadLoopedSoundFx("charge-orb");
+        _fireFx = Calimoe.AssetManager.LoadSoundFx("fire");
 
         _positionOffset = positionOffset;
-        _progressBarContainer = new SpriteObject(am.LoadTexture("progress-bar-container"));
-        _progressBarTick = am.LoadTexture("progress-bar-tick");
+        _progressBarContainer = new SpriteObject(Calimoe.AssetManager.LoadTexture("progress-bar-container"));
+        _progressBarTick = Calimoe.AssetManager.LoadTexture("progress-bar-tick");
         _playArea = playArea;
-        var orb = am.LoadTexture("orb-greyscale");
+        var orb = Calimoe.AssetManager.LoadTexture("orb-greyscale");
         _orb = new SpriteObject(orb);
         _orb.Origin = new Vector2(orb.Width / 2, orb.Height / 2);
         SetupProgressBar();

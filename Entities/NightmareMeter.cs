@@ -15,11 +15,11 @@ public class NightmareMeter : GameObject
     private int _numTicks;
 
 
-    public NightmareMeter(AssetManager am)
+    public NightmareMeter()
     {
-        _skull = new SpriteObject(am.LoadTexture("gameover"), new Vector2(6, 10), Vector2.Zero, 1.0f);
-        _container = new SpriteObject(am.LoadTexture("nightmare-meter-container"), new Vector2(12, 36), Vector2.Zero, 1.0f);
-        _tick = am.LoadTexture("mightmare-meter-tick");
+        _skull = new SpriteObject(Calimoe.AssetManager.LoadTexture("gameover"), new Vector2(6, 10), Vector2.Zero, 1.0f);
+        _container = new SpriteObject(Calimoe.AssetManager.LoadTexture("nightmare-meter-container"), new Vector2(12, 36), Vector2.Zero, 1.0f);
+        _tick = Calimoe.AssetManager.LoadTexture("mightmare-meter-tick");
         SetupMeter();
     }
     protected void SetupMeter()
